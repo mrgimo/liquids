@@ -7,7 +7,7 @@
 	</classpathentry>
 	<classpathentry kind="src" path="test"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/JOGL Library"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/JUnit Library"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/Processing Library"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
