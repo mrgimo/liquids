@@ -75,9 +75,11 @@ public class Liquids implements GLEventListener {
 		GL gl = autoDrawable.getGL();
 
 		gl.glClear(GL.GL_COLOR_BUFFER_BIT);
+
 		for (Drawable drawable : drawables) {
 			drawable.draw(gl);
 		}
+
 		gl.glFlush();
 	}
 
@@ -94,7 +96,11 @@ public class Liquids implements GLEventListener {
 	}
 
 	public static void main(String[] args) {
-		new Liquids();
+		Liquids liquids = new Liquids();
+
+		for (int i = 0; i < 10000; ++i) {
+			liquids.drawables.add(new Particle(null));
+		}
 	}
 
 }
