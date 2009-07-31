@@ -7,8 +7,8 @@ import java.awt.event.WindowEvent;
 
 import javax.swing.JFrame;
 
+import ch.hsr.ifs.liquids.common.abstracts.Screen;
 import ch.hsr.ifs.liquids.controller.Engine;
-import ch.hsr.ifs.liquids.screens.Screen;
 import ch.hsr.ifs.liquids.screens.StartUpScreen;
 
 public class Liquids {
