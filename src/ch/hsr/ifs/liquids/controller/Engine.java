@@ -4,8 +4,7 @@ import javax.media.opengl.GL;
 import javax.media.opengl.GLAutoDrawable;
 import javax.media.opengl.GLEventListener;
 
-import ch.hsr.ifs.liquids.common.abstracts.Screen;
-import ch.hsr.ifs.liquids.common.interfaces.Drawable;
+import ch.hsr.ifs.liquids.drawables.widgets.Screen;
 
 public class Engine implements GLEventListener {
 
@@ -18,7 +17,6 @@ public class Engine implements GLEventListener {
 
 		int width = drawable.getWidth();
 		int height = drawable.getHeight();
-
 		reshape(drawable, 0, 0, width, height);
 	}
 
@@ -36,17 +34,12 @@ public class Engine implements GLEventListener {
 		GL gl = drawable.getGL();
 
 		gl.glClear(GL.GL_COLOR_BUFFER_BIT);
-
-		for (Drawable d : screen.getDrawables()) {
-			d.draw(gl);
-		}
-
+		screen.draw(gl);
 		gl.glFlush();
 	}
 
 	public void displayChanged(GLAutoDrawable drawable, boolean modeChanged,
 			boolean deviceChanged) {
-		System.out.println("who touched my display?!");
 		// TODO: implement method displayChanged
 	}
 

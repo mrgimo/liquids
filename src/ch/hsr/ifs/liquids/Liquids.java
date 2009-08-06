@@ -7,9 +7,9 @@ import java.awt.event.WindowEvent;
 
 import javax.swing.JFrame;
 
-import ch.hsr.ifs.liquids.common.abstracts.Screen;
 import ch.hsr.ifs.liquids.controller.Engine;
-import ch.hsr.ifs.liquids.screens.StartUpScreen;
+import ch.hsr.ifs.liquids.drawables.widgets.Screen;
+import ch.hsr.ifs.liquids.drawables.widgets.screens.StartUpScreen;
 
 public class Liquids {
 
@@ -33,8 +33,8 @@ public class Liquids {
 		configureFrame();
 
 		addScreen(new StartUpScreen());
-		addWindowListener();
 
+		frame.addWindowListener(createWindowListener());
 		frame.setVisible(true);
 	}
 
@@ -50,8 +50,8 @@ public class Liquids {
 		device.setFullScreenWindow(frame);
 	}
 
-	private void addWindowListener() {
-		frame.addWindowListener(new WindowAdapter() {
+	private WindowAdapter createWindowListener() {
+		return new WindowAdapter() {
 
 			@Override
 			public void windowClosing(WindowEvent e) {
@@ -60,24 +60,7 @@ public class Liquids {
 				System.exit(0);
 			}
 
-		});
-	}
-
-	private void addScreen(Screen newScreen) {
-		frame.add(newScreen);
-		engine.setScreen(newScreen);
-		newScreen.open();
-		screen = newScreen;
-	}
-
-	private void removeScreen() {
-		if (screen == null) {
-			return;
-		}
-
-		screen.close();
-		frame.remove(screen);
-		screen = null;
+		};
 	}
 
 	public void changeScreen(Screen newScreen) {
@@ -89,12 +72,22 @@ public class Liquids {
 		frame.setVisible(true);
 	}
 
-	public Screen getScreen() {
-		return screen;
+	private void addScreen(Screen newScreen) {
+		frame.add(newScreen);
+		engine.setScreen(newScreen);
+		newScreen.open();
+
+		screen = newScreen;
 	}
 
-	public Frame getFrame() {
-		return frame;
+	private void removeScreen() {
+		if (screen == null) {
+			return;
+		}
+
+		screen.close();
+		frame.remove(screen);
+		screen = null;
 	}
 
 	public static void main(String[] args) {
