@@ -2,52 +2,42 @@ package ch.hsr.ifs.liquids;
 
 import java.awt.Frame;
 import java.awt.GraphicsDevice;
+import java.awt.Window;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
+import javax.media.opengl.GLCanvas;
+import javax.media.opengl.GLCapabilities;
 import javax.swing.JFrame;
 
-import ch.hsr.ifs.liquids.controller.Engine;
-import ch.hsr.ifs.liquids.drawables.widgets.Screen;
-import ch.hsr.ifs.liquids.drawables.widgets.screens.StartUpScreen;
+import ch.hsr.ifs.liquids.common.Renderable;
+import ch.hsr.ifs.liquids.controller.RenderingEngine;
+import ch.hsr.ifs.liquids.widgets.screens.StartUpScreen;
+
+import com.sun.opengl.util.Animator;
 
 public class Liquids {
 
-	private Engine engine;
-
 	private Frame frame;
-	private Screen screen;
+	private RenderingEngine renderer;
 
 	public Liquids() {
-		initialzeEngine();
 		initializeFrame();
-	}
+		initializeRenderer();
 
-	private void initialzeEngine() {
-		engine = new Engine();
+		frame.setVisible(true);
+		renderer.start();
 	}
 
 	private void initializeFrame() {
 		frame = new JFrame();
 
-		configureFrame();
-
-		addScreen(new StartUpScreen());
-
 		frame.addWindowListener(createWindowListener());
-		frame.setVisible(true);
-	}
 
-	private void configureFrame() {
 		frame.setUndecorated(true);
 		frame.setAlwaysOnTop(true);
 
-		setFullscreen();
-	}
-
-	private void setFullscreen() {
-		GraphicsDevice device = frame.getGraphicsConfiguration().getDevice();
-		device.setFullScreenWindow(frame);
+		setFullscreen(frame);
 	}
 
 	private WindowAdapter createWindowListener() {
@@ -56,38 +46,27 @@ public class Liquids {
 			@Override
 			public void windowClosing(WindowEvent e) {
 				frame.setVisible(false);
-				removeScreen();
+				renderer.stop();
 				System.exit(0);
 			}
 
 		};
 	}
 
-	public void changeScreen(Screen newScreen) {
-		frame.setVisible(false);
-
-		removeScreen();
-		addScreen(newScreen);
-
-		frame.setVisible(true);
+	private void setFullscreen(Window window) {
+		GraphicsDevice device = window.getGraphicsConfiguration().getDevice();
+		device.setFullScreenWindow(window);
 	}
 
-	private void addScreen(Screen newScreen) {
-		frame.add(newScreen);
-		engine.setScreen(newScreen);
-		newScreen.open();
+	private void initializeRenderer() {
+		GLCapabilities capabilities = new GLCapabilities();
+		GLCanvas canvas = new GLCanvas(capabilities);
+		Animator animator = new Animator(canvas);
+		Renderable screen = new StartUpScreen();
 
-		screen = newScreen;
-	}
+		renderer = new RenderingEngine(screen, animator);
 
-	private void removeScreen() {
-		if (screen == null) {
-			return;
-		}
-
-		screen.close();
-		frame.remove(screen);
-		screen = null;
+		canvas.addGLEventListener(renderer);
 	}
 
 	public static void main(String[] args) {

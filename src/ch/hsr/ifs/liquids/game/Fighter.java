@@ -1,11 +1,13 @@
 package ch.hsr.ifs.liquids.game;
 
-import ch.hsr.ifs.liquids.common.Colorizable;
-import ch.hsr.ifs.liquids.common.Positionable;
+import javax.media.opengl.GL;
+
+import ch.hsr.ifs.liquids.common.Renderable;
+import ch.hsr.ifs.liquids.common.Movable;
 import ch.hsr.ifs.liquids.util.Color;
 import ch.hsr.ifs.liquids.util.Vector;
 
-public class Fighter implements Positionable, Colorizable {
+public class Fighter implements Renderable, Movable {
 
 	protected Player player;
 	
@@ -14,19 +16,14 @@ public class Fighter implements Positionable, Colorizable {
 	
 	protected Color color;
 
-	public Vector getPosition() {
-		return position;
+	public void render(GL gl) {
+		// TODO Auto-generated method stub
+		
 	}
 
-	public void setPosition(Vector position) {
-		this.position = position;
+	public void move() {
+		// TODO Auto-generated method stub
+		
 	}
 
-	public Color getColor(Color color) {
-		return color;
-	}
-
-	public void setColor(Color color) {
-		this.color = color;
-	}
 }

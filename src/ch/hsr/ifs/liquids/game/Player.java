@@ -1,29 +1,23 @@
 package ch.hsr.ifs.liquids.game;
 
-import ch.hsr.ifs.liquids.common.Colorizable;
-import ch.hsr.ifs.liquids.common.Positionable;
+import javax.media.opengl.GL;
+
+import ch.hsr.ifs.liquids.common.Renderable;
+import ch.hsr.ifs.liquids.common.Movable;
 import ch.hsr.ifs.liquids.util.Color;
 import ch.hsr.ifs.liquids.util.Vector;
 
-public class Player implements Positionable, Colorizable {
+public class Player implements Movable, Renderable {
 
 	protected Vector position;
 	protected Color color;
 
-	public Vector getPosition() {
-		return position;
+	public void move() {
+
 	}
 
-	public void setPosition(Vector position) {
-		this.position = position;
-	}
-
-	public Color getColor(Color color) {
-		return color;
-	}
-
-	public void setColor(Color color) {
-		this.color = color;
+	public void render(GL gl) {
+		
 	}
 
 }
