@@ -6,15 +6,10 @@ import java.awt.Window;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
-import javax.media.opengl.GLCanvas;
-import javax.media.opengl.GLCapabilities;
 import javax.swing.JFrame;
 
-import ch.hsr.ifs.liquids.common.Renderable;
 import ch.hsr.ifs.liquids.controller.RenderingEngine;
-import ch.hsr.ifs.liquids.widgets.screens.StartUpScreen;
-
-import com.sun.opengl.util.Animator;
+import ch.hsr.ifs.liquids.widgets.Image;
 
 public class Liquids {
 
@@ -26,7 +21,6 @@ public class Liquids {
 		initializeRenderer();
 
 		frame.setVisible(true);
-		renderer.start();
 	}
 
 	private void initializeFrame() {
@@ -59,18 +53,66 @@ public class Liquids {
 	}
 
 	private void initializeRenderer() {
-		GLCapabilities capabilities = new GLCapabilities();
-		GLCanvas canvas = new GLCanvas(capabilities);
-		Animator animator = new Animator(canvas);
-		Renderable screen = new StartUpScreen();
-
-		renderer = new RenderingEngine(screen, animator);
-
-		canvas.addGLEventListener(renderer);
+		renderer = new RenderingEngine(frame);
+		//renderer.setRenderable(new Image("data/maps/arcadia"));
 	}
 
 	public static void main(String[] args) {
 		new Liquids();
+		/*JFrame frame = new JFrame();
+
+		frame.setSize(800, 600);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		
+		GLCanvas canvas = new GLCanvas(new GLCapabilities());
+		canvas.addGLEventListener(new GLEventListener() {
+
+			public void init(GLAutoDrawable drawable) {
+				GL gl = drawable.getGL();
+
+				gl.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+
+				int width = drawable.getWidth();
+				int height = drawable.getHeight();
+				reshape(drawable, 0, 0, width, height);
+			}
+
+			public void reshape(GLAutoDrawable drawable, int x, int y,
+					int width, int height) {
+				GL gl = drawable.getGL();
+
+				gl.glViewport(0, 0, width, height);
+				gl.glMatrixMode(GL.GL_PROJECTION);
+				gl.glLoadIdentity();
+				gl.glOrtho(0, width, 0, height, -1, 1);
+			}
+
+			public void display(GLAutoDrawable drawable) {
+				GL gl = drawable.getGL();
+
+				//gl.glClear(GL.GL_COLOR_BUFFER_BIT);
+
+				//gl.glColor3f(1f, 1f, 1f);
+				gl.glBegin(GL.GL_POLYGON);
+				gl.glVertex3f(100, 100, 0f);
+				gl.glVertex3f(200, 100, 0f);
+				gl.glVertex3f(200, 200, 0f);
+				gl.glVertex3f(100, 200, 0f);
+				gl.glEnd();
+
+				gl.glFlush();
+			}
+
+			public void displayChanged(GLAutoDrawable drawable,
+					boolean modeChanged, boolean deviceChanged) {
+				init(drawable);
+			}
+		});
+		
+		frame.add(canvas);
+
+		frame.setVisible(true);*/
+
 	}
 
 }

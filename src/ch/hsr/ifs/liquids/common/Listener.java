@@ -10,17 +10,4 @@ public abstract class Listener<E extends Event> {
 		EventHandler.addListener(this);
 	}
 
-	public static void main(String[] args) throws SecurityException, NoSuchMethodException {
-		Listener<Event> listener = new Listener<Event>() {
-
-			@Override
-			public void respond(Event event) {
-
-			}
-
-		};
-		
-		System.out.println(listener.getClass().);
-	}
-
 }

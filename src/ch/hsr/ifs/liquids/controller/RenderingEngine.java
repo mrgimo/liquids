@@ -1,31 +1,51 @@
 package ch.hsr.ifs.liquids.controller;
 
+import java.awt.Frame;
+
 import javax.media.opengl.GL;
 import javax.media.opengl.GLAutoDrawable;
+import javax.media.opengl.GLCanvas;
+import javax.media.opengl.GLCapabilities;
 import javax.media.opengl.GLEventListener;
 
 import ch.hsr.ifs.liquids.common.Renderable;
+import ch.hsr.ifs.liquids.widgets.Image;
 
 import com.sun.opengl.util.Animator;
+import com.sun.opengl.util.FPSAnimator;
 
 public class RenderingEngine implements GLEventListener {
 
-	protected Renderable renderable;
-	protected Animator animator;
+	private static final int FRAMES_PER_SECOND = 60;
 
-	public RenderingEngine(Renderable renderable, Animator animator) {
-		this.renderable = renderable;
-		this.animator = animator;
+	private Renderable renderable = new Image("data/maps/arcadia/texture.jpg");
+	private Animator animator;
+
+	public RenderingEngine(Frame frame) {
+		GLCanvas canvas = new GLCanvas(createCapabilities());
+		canvas.addGLEventListener(this);
+		frame.add(canvas);
+
+		animator = new FPSAnimator(canvas, FRAMES_PER_SECOND);
 	}
 
-	public void init(GLAutoDrawable autoDrawable) {
-		GL gl = autoDrawable.getGL();
+	private GLCapabilities createCapabilities() {
+		GLCapabilities capabilities = new GLCapabilities();
+
+		capabilities.setDoubleBuffered(true);
+		capabilities.setHardwareAccelerated(true);
+
+		return capabilities;
+	}
+
+	public void init(GLAutoDrawable drawable) {
+		GL gl = drawable.getGL();
 
 		gl.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
-		int width = autoDrawable.getWidth();
-		int height = autoDrawable.getHeight();
-		reshape(autoDrawable, 0, 0, width, height);
+		int width = drawable.getWidth();
+		int height = drawable.getHeight();
+		reshape(drawable, 0, 0, width, height);
 	}
 
 	public void reshape(GLAutoDrawable drawable, int x, int y, int width,
@@ -46,8 +66,8 @@ public class RenderingEngine implements GLEventListener {
 		gl.glFlush();
 	}
 
-	public void displayChanged(GLAutoDrawable drawable,
-			boolean modeChanged, boolean deviceChanged) {
+	public void displayChanged(GLAutoDrawable drawable, boolean modeChanged,
+			boolean deviceChanged) {
 		init(drawable);
 	}
 
@@ -56,10 +76,12 @@ public class RenderingEngine implements GLEventListener {
 	}
 
 	public void stop() {
-		animator.stop();
+		if (animator.isAnimating()) {
+			animator.stop();
+		}
 	}
 
-	public void setDrawable(Renderable renderable) {
+	public void setRenderable(Renderable renderable) {
 		if (animator.isAnimating()) {
 			animator.stop();
 		}

@@ -11,9 +11,7 @@ public class EventHandler {
 	private static List<Listener<?>> listeners = new List<Listener<?>>();
 
 	public static <E extends Event> void handle(E event) {
-		/*for (Listener<?> listener : listeners) {
-			listener.respond(event);
-		}*/
+		
 	}
 
 	public static void addListener(Listener<?> listener) {

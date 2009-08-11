@@ -9,7 +9,6 @@ public abstract class Component implements Renderable {
 
 	protected List<Renderable> renderables;
 
-	@Override
 	public void render(GL gl) {
 		for (Renderable renderable : renderables) {
 			renderable.render(gl);
