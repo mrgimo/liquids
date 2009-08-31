@@ -9,7 +9,6 @@ import javax.media.opengl.GLCapabilities;
 import javax.media.opengl.GLEventListener;
 
 import ch.hsr.ifs.liquids.common.Renderable;
-import ch.hsr.ifs.liquids.widgets.Image;
 
 import com.sun.opengl.util.Animator;
 import com.sun.opengl.util.FPSAnimator;
@@ -18,7 +17,7 @@ public class RenderingEngine implements GLEventListener {
 
 	private static final int FRAMES_PER_SECOND = 60;
 
-	private Renderable renderable = new Image("data/maps/arcadia/texture.jpg");
+	private Renderable renderable;
 	private Animator animator;
 
 	public RenderingEngine(Frame frame) {

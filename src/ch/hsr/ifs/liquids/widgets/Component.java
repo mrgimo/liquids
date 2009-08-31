@@ -7,7 +7,7 @@ import ch.hsr.ifs.liquids.util.list.List;
 
 public abstract class Component implements Renderable {
 
-	protected List<Renderable> renderables;
+	protected List<Renderable> renderables = new List<Renderable>();
 
 	public void render(GL gl) {
 		for (Renderable renderable : renderables) {
