@@ -14,7 +14,7 @@ import ch.hsr.ifs.liquids.common.Renderable;
 
 public class Image implements Renderable {
 
-	public static final int NUMBER_OF_BANDS = 4;
+	public static final int NUMBER_OF_BANDS = 3;
 
 	private int width;
 	private int height;
@@ -43,25 +43,12 @@ public class Image implements Renderable {
 	}
 
 	protected byte[] getPixelsAsByteArray(BufferedImage image) {
-		byte[] pixels = new byte[width * height * NUMBER_OF_BANDS];
-		
-		int i = 0;
-		for(int y = 0; y < height; y++){
-			for(int x = 0; x < width; x++){
-				int[] pixel = image.getData().getPixel(x, y, new int[4]);
-				ByteInterleavedRaster raster = (ByteInterleavedRaster) image.getData();
-
-				for(int sample : pixel){
-					pixels[i++] = (byte) sample;
-				}
-			}
-		}
-		
-		return pixels;
+		ByteInterleavedRaster raster = (ByteInterleavedRaster) image.getData();
+		return raster.getByteData(0, 0, width, height, (byte[]) null);
 	}
 
 	public void render(GL gl) {
-		gl.glDrawPixels(width, height, GL.GL_RGBA, GL.GL_UNSIGNED_BYTE, pixelBuffer);
+		gl.glDrawPixels(width, height, GL.GL_RGB, GL.GL_UNSIGNED_BYTE, pixelBuffer);
 	}
 
 	public int getWidth() {
