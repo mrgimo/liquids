@@ -8,7 +8,10 @@ import java.awt.event.WindowEvent;
 
 import javax.swing.JFrame;
 
-import ch.hsr.ifs.liquids.controller.RenderingEngine;
+import ch.hsr.ifs.liquids.controller.devices.Device;
+import ch.hsr.ifs.liquids.controller.devices.Keyboard;
+import ch.hsr.ifs.liquids.controller.devices.Mouse;
+import ch.hsr.ifs.liquids.controller.engines.RenderingEngine;
 import ch.hsr.ifs.liquids.widgets.screens.StartUpScreen;
 
 public class Liquids {
@@ -16,7 +19,7 @@ public class Liquids {
 	private Frame frame;
 	private RenderingEngine renderer;
 
-	public Liquids() {
+	public Liquids() {		
 		frame = new JFrame();
 		setupFrame();
 		
@@ -60,6 +63,9 @@ public class Liquids {
 	}
 
 	public static void main(String[] args) {
+		Device.plugDevice(Keyboard.class);
+		Device.plugDevice(Mouse.class);
+		
 		new Liquids();
 	}
 

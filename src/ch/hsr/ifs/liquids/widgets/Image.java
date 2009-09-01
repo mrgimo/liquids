@@ -9,7 +9,6 @@ import javax.imageio.ImageIO;
 import javax.media.opengl.GL;
 
 import sun.awt.image.ByteInterleavedRaster;
-
 import ch.hsr.ifs.liquids.common.Renderable;
 
 public class Image implements Renderable {
@@ -27,9 +26,7 @@ public class Image implements Renderable {
 		width = image.getWidth();
 		height = image.getHeight();
 
-		byte[] pixels = getPixelsAsByteArray(image);
-
-		pixelBuffer = ByteBuffer.wrap(pixels);
+		pixelBuffer = ByteBuffer.wrap(getPixels(image));
 	}
 
 	private BufferedImage readImage(String path) {
@@ -42,13 +39,42 @@ public class Image implements Renderable {
 		}
 	}
 
-	protected byte[] getPixelsAsByteArray(BufferedImage image) {
+	protected byte[] getPixels(BufferedImage image) {
 		ByteInterleavedRaster raster = (ByteInterleavedRaster) image.getData();
-		return raster.getByteData(0, 0, width, height, (byte[]) null);
+		byte[] pixels = raster.getByteData(0, 0, width, height, (byte[]) null);
+
+		swapPixels(pixels);
+
+		return pixels;
+	}
+
+	protected void swapPixels(byte[] pixels) {
+		int a = 0;
+		int b = pixels.length - 3;
+
+		while (a < b) {
+			swapPixel(a, b, pixels);
+
+			a += 3;
+			b -= 3;
+		}
+	}
+
+	protected void swapPixel(int a, int b, byte[] pixels) {
+		for (int i = 0; i < 3; i++) {
+			swap(a + i, b + i, pixels);
+		}
+	}
+
+	protected void swap(int a, int b, byte[] array) {
+		array[a] ^= array[b];
+		array[b] ^= array[a];
+		array[a] ^= array[b];
 	}
 
 	public void render(GL gl) {
-		gl.glDrawPixels(width, height, GL.GL_RGB, GL.GL_UNSIGNED_BYTE, pixelBuffer);
+		gl.glDrawPixels(width, height, GL.GL_RGB, GL.GL_UNSIGNED_BYTE,
+				pixelBuffer);
 	}
 
 	public int getWidth() {

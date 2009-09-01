@@ -5,13 +5,13 @@ import javax.media.opengl.GL;
 import ch.hsr.ifs.liquids.common.Renderable;
 import ch.hsr.ifs.liquids.util.list.List;
 
-public abstract class Component implements Renderable {
+public abstract class Component extends Element {
 
-	protected List<Renderable> renderables = new List<Renderable>();
+	protected List<Renderable> elements = new List<Renderable>();
 
 	public void render(GL gl) {
-		for (Renderable renderable : renderables) {
-			renderable.render(gl);
+		for (Renderable element : elements) {
+			element.render(gl);
 		}
 	}
 

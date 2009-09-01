@@ -2,9 +2,7 @@ package ch.hsr.ifs.liquids.util;
 
 public class Vector {
 
-	public float x;
-	public float y;
-	public float z;
+	public float x, y, z;
 
 	public Vector() {
 		this(0, 0, 0);

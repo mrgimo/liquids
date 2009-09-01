@@ -1,11 +1,9 @@
 package ch.hsr.ifs.liquids.util;
 
+
 public class Color {
 
-	public float red;
-	public float green;
-	public float blue;
-	public float alpha;
+	public float red, green, blue, alpha;
 
 	public Color() {
 		this(0, 0, 0, 0);

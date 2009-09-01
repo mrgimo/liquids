@@ -9,7 +9,7 @@ import ch.hsr.ifs.liquids.widgets.Image;
 public class StartUpScreen extends Component {
 
 	public StartUpScreen() {
-		renderables.add(new Renderable() {
+		elements.add(new Renderable() {
 
 			@Override
 			public void render(GL gl) {
@@ -24,7 +24,7 @@ public class StartUpScreen extends Component {
 
 		});
 		
-		renderables.add(new Image("data/maps/arcadia/texture.jpg"));
+		elements.add(new Image("data/maps/arcadia/texture.jpg"));
 	}
 
 }

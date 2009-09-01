@@ -1,4 +1,4 @@
-package ch.hsr.ifs.liquids.controller;
+package ch.hsr.ifs.liquids.controller.engines;
 
 import ch.hsr.ifs.liquids.common.Movable;
 import ch.hsr.ifs.liquids.util.list.List;
@@ -15,10 +15,10 @@ public class PhysicsEngine {
 	public PhysicsEngine(List<Movable> movables) {
 		this.movables = movables;
 
-		initializeMotionThread();
+		initMotionThread();
 	}
 
-	private void initializeMotionThread() {
+	private void initMotionThread() {
 		motionThread = new Thread() {
 
 			@Override
