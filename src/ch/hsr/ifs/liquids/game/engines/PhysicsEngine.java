@@ -1,4 +1,4 @@
-package ch.hsr.ifs.liquids.controller.engines;
+package ch.hsr.ifs.liquids.game.engines;
 
 import ch.hsr.ifs.liquids.common.Movable;
 import ch.hsr.ifs.liquids.util.list.List;

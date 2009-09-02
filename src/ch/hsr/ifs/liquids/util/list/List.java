@@ -48,7 +48,7 @@ public class List<T> implements Iterable<T> {
 		if (!isValidIndex(index)) {
 			throw new IllegalArgumentException(INVALID_INDEX_MESSAGE);
 		}
-		
+
 		--size;
 
 		for (int i = 0; i < size; ++i) {
@@ -57,6 +57,14 @@ public class List<T> implements Iterable<T> {
 			}
 
 			elements[i] = elements[i + 1];
+		}
+	}
+
+	public void remove(T element) {
+		for (int i = 0; i < elements.length; i++) {
+			if (elements[i] == element) {
+				remove(i);
+			}
 		}
 	}
 

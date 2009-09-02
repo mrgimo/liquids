@@ -8,10 +8,10 @@ import java.awt.event.WindowEvent;
 
 import javax.swing.JFrame;
 
-import ch.hsr.ifs.liquids.controller.devices.Device;
 import ch.hsr.ifs.liquids.controller.devices.Keyboard;
 import ch.hsr.ifs.liquids.controller.devices.Mouse;
-import ch.hsr.ifs.liquids.controller.engines.RenderingEngine;
+import ch.hsr.ifs.liquids.controller.devices.Devices.Port;
+import ch.hsr.ifs.liquids.game.engines.RenderingEngine;
 import ch.hsr.ifs.liquids.widgets.screens.StartUpScreen;
 
 public class Liquids {
@@ -19,10 +19,10 @@ public class Liquids {
 	private Frame frame;
 	private RenderingEngine renderer;
 
-	public Liquids() {		
+	public Liquids() {
 		frame = new JFrame();
 		setupFrame();
-		
+
 		renderer = new RenderingEngine(frame);
 		setupRenderer();
 
@@ -46,6 +46,7 @@ public class Liquids {
 			public void windowClosing(WindowEvent e) {
 				frame.setVisible(false);
 				renderer.stop();
+
 				System.exit(0);
 			}
 
@@ -56,16 +57,16 @@ public class Liquids {
 		GraphicsDevice device = window.getGraphicsConfiguration().getDevice();
 		device.setFullScreenWindow(window);
 	}
-	
+
 	private void setupRenderer() {
 		StartUpScreen screen = new StartUpScreen();
 		renderer.setRenderable(screen);
 	}
 
 	public static void main(String[] args) {
-		Device.plugDevice(Keyboard.class);
-		Device.plugDevice(Mouse.class);
-		
+		new Keyboard(Port.ONE);
+		new Mouse(Port.TWO);
+
 		new Liquids();
 	}
 

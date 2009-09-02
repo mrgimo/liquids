@@ -4,7 +4,12 @@ import java.awt.AWTEvent;
 import java.awt.Toolkit;
 import java.awt.event.AWTEventListener;
 
-public class Mouse extends Device {
+import ch.hsr.ifs.liquids.common.Audible;
+import ch.hsr.ifs.liquids.controller.devices.Devices.Port;
+import ch.hsr.ifs.liquids.controller.listeners.MouseListener;
+import ch.hsr.ifs.liquids.util.list.List;
+
+public class Mouse extends Device implements Audible<MouseListener> {
 
 	public enum Button {
 		LEFT, RIGHT, MIDDLE, WHEEL_UP, WHEEL_DOWN;
@@ -13,7 +18,11 @@ public class Mouse extends Device {
 	private AWTEventListener eventListener;
 	private AWTEventListener motionListener;
 
-	protected Mouse() {
+	private List<MouseListener> listeners = new List<MouseListener>();
+
+	public Mouse(Port port) {
+		super(port);
+
 		Toolkit toolkit = Toolkit.getDefaultToolkit();
 
 		initEvents(toolkit);
@@ -53,6 +62,14 @@ public class Mouse extends Device {
 
 		toolkit.removeAWTEventListener(eventListener);
 		toolkit.removeAWTEventListener(motionListener);
+	}
+
+	public void addEventListener(MouseListener listener) {
+		listeners.add(listener);
+	}
+
+	public void removeEventListener(MouseListener listener) {
+		listeners.remove(listener);
 	}
 
 }

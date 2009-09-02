@@ -1,4 +1,4 @@
-package ch.hsr.ifs.liquids.controller.engines;
+package ch.hsr.ifs.liquids.game.engines;
 
 import java.awt.Frame;
 

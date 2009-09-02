@@ -1,19 +1,19 @@
--
-  name: arcandia
-  players: 8
+arcandia:
+  mapPath: data/maps/arcadia/map.png
+  texturePath: data/maps/arcadia/texture.jpg
 
--
-  name: garden
-  players: 8
+garden:
+  mapPath: data/maps/garden/map.png
+  texturePath: data/maps/garden/texture.jpg
 
--
-  name: rust
-  players: 8
+rust:
+  mapPath: data/maps/rust/map.png
+  texturePath: data/maps/rust/texture.jpg
 
--
-  name: sinusoid
-  players: 8
+sinusoid:
+  mapPath: data/maps/sinusoid/map.png
+  texturePath: data/maps/sinusoid/texture.jpg
 
--
-  name: vortex
-  players: 8
+vortex:
+  mapPath: data/maps/vortex/map.png
+  texturePath: data/maps/vortex/texture.jpg
