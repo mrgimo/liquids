@@ -11,6 +11,10 @@ public class Particle implements Renderable, Movable {
 	protected Player player;
 	protected Vector position;
 	
+	public Particle(Player player) {
+		this.player = player;
+	}
+	
 	public void render(GL gl) {
 		gl.glColor3f(player.color.red, player.color.green, player.color.blue);
 

@@ -1,21 +1,23 @@
 package ch.hsr.ifs.liquids.util;
 
-public class Color {
+public enum Color {
 
-	public byte red, green, blue, alpha;
+	RED((byte)0xff, (byte)0x00, (byte)0x00),
+	GREEN((byte)0x00, (byte)0xff, (byte)0x00),
+	BLUE((byte)0x00, (byte)0x00, (byte)0xff);
 
-	public Color() {
-		red = green = blue = alpha = 0;
-	}
-
-	public Color(byte red, byte green, byte blue) {
-		this(red, green, blue, (byte) 0);
-	}
-
-	public Color(byte red, byte green, byte blue, byte alpha) {
+	public byte red;
+	public byte green;
+	public byte blue;
+	
+	private Color(byte red, byte green, byte blue) {
 		this.red = red;
 		this.green = green;
 		this.blue = blue;
-		this.alpha = alpha;
+	} 
+	
+	public static void main(String[] args) {
+		
 	}
+	
 }
