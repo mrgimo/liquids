@@ -1,5 +1,7 @@
 package ch.hsr.ifs.liquids.widgets;
 
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.nio.Buffer;
@@ -27,6 +29,36 @@ public class Image implements Renderable {
 		height = image.getHeight();
 
 		pixelBuffer = ByteBuffer.wrap(getPixels(image));
+	}
+
+	public Image(String path, int width, int height) {
+		BufferedImage image = scale(readImage(path), width, height);
+
+		this.width = image.getWidth();
+		this.height = image.getHeight();
+
+		pixelBuffer = ByteBuffer.wrap(getPixels(image));
+	}
+
+	private BufferedImage scale(BufferedImage image, int width, int height) {
+		int type = BufferedImage.TYPE_3BYTE_BGR;
+		BufferedImage scaledImage = new BufferedImage(width, height, type);
+
+		Graphics2D graphics = scaledImage.createGraphics();
+
+		graphics.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
+				RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+
+		graphics.setRenderingHint(RenderingHints.KEY_RENDERING,
+				RenderingHints.VALUE_RENDER_QUALITY);
+
+		graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+				RenderingHints.VALUE_ANTIALIAS_ON);
+
+		graphics.drawImage(image, 0, 0, width, height, null);
+		graphics.dispose();
+
+		return scaledImage;
 	}
 
 	private BufferedImage readImage(String path) {

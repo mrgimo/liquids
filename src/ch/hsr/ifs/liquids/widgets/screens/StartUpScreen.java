@@ -1,5 +1,8 @@
 package ch.hsr.ifs.liquids.widgets.screens;
 
+import java.awt.Dimension;
+import java.awt.Toolkit;
+
 import javax.media.opengl.GL;
 
 import ch.hsr.ifs.liquids.common.Renderable;
@@ -24,7 +27,8 @@ public class StartUpScreen extends Component {
 
 		});
 		
-		elements.add(new Image("data/maps/arcadia/texture.jpg"));
+		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+		elements.add(new Image("data/maps/arcadia/texture.jpg", screenSize.width, screenSize.height));
 	}
 
 }
