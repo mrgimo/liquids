@@ -7,7 +7,7 @@ public interface MouseListener extends EventListener {
 
 	public void mouseMoved(MouseEvent event);
 
-	public void buttonClicked(MouseEvent event);
+	public void buttonPressed(MouseEvent event);
 
 	public void buttonReleased(MouseEvent event);
 

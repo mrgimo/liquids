@@ -1,39 +1,41 @@
 package ch.hsr.ifs.liquids.controller.events;
 
+import java.awt.AWTEvent;
+
 import ch.hsr.ifs.liquids.controller.Event;
 import ch.hsr.ifs.liquids.controller.devices.Mouse.Button;
 import ch.hsr.ifs.liquids.util.Vector;
-import ch.hsr.ifs.liquids.util.list.List;
 
 public class MouseEvent extends Event {
 
-	private Vector position = new Vector();
+	public static MouseEvent createMouseEvent(AWTEvent event) {
+		java.awt.event.MouseEvent mouseEvent = (java.awt.event.MouseEvent) event;
 
-	private List<Button> clickedButtons = new List<Button>();
-	private List<Button> releasedButtons = new List<Button>();
+		int x = mouseEvent.getX();
+		int y = mouseEvent.getY();
+		Vector position = new Vector(x, y);
 
-	public MouseEvent(Vector position, List<Button> clickedButtons,
-			List<Button> releasedButtons) {
-		if (position != null)
-			this.position = position;
+		int id = mouseEvent.getButton();
+		Button button = Button.getByID(id);
+		button.invert();
 
-		if (clickedButtons != null)
-			this.clickedButtons = clickedButtons;
+		return new MouseEvent(position, button);
+	}
 
-		if (releasedButtons != null)
-			this.releasedButtons = releasedButtons;
+	private Vector position;
+	private Button changedButton;
+
+	public MouseEvent(Vector position, Button changedButton) {
+		this.position = position;
+		this.changedButton = changedButton;
 	}
 
 	public Vector getPosition() {
 		return position;
 	}
 
-	public List<Button> getClickedButtons() {
-		return clickedButtons;
-	}
-
-	public List<Button> getReleasedButtons() {
-		return releasedButtons;
+	public Button getChangedButton() {
+		return changedButton;
 	}
 
 }

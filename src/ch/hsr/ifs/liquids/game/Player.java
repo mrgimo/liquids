@@ -7,14 +7,13 @@ import javax.media.opengl.GL;
 import ch.hsr.ifs.liquids.common.Movable;
 import ch.hsr.ifs.liquids.common.Renderable;
 import ch.hsr.ifs.liquids.controller.devices.Device;
-import ch.hsr.ifs.liquids.controller.devices.Devices;
 import ch.hsr.ifs.liquids.util.Color;
 
 public class Player implements Movable, Renderable {
 
 	public String name;
 	public Color color;
-	public Device device;
+	public Device<?> device;
 
 	public static Player[] createPlayers() {
 		Player[] players = new Player[Config.players.size()];
@@ -29,7 +28,7 @@ public class Player implements Movable, Renderable {
 
 			player.name = name;
 			player.color = Color.getColorByName(color);
-			player.device = Devices.getDeviceByName(device);
+			player.device = Device.getDeviceByName(device);
 
 			players[i++] = player;
 		}

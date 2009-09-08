@@ -8,8 +8,9 @@ import java.awt.event.WindowEvent;
 
 import javax.swing.JFrame;
 
+import ch.hsr.ifs.liquids.common.Renderable;
 import ch.hsr.ifs.liquids.game.engines.RenderingEngine;
-import ch.hsr.ifs.liquids.widgets.screens.StartUpScreen;
+import ch.hsr.ifs.liquids.widgets.screens.InGameScreen;
 
 public class Liquids {
 
@@ -56,7 +57,7 @@ public class Liquids {
 	}
 
 	private void setupRenderer() {
-		StartUpScreen screen = new StartUpScreen();
+		Renderable screen = new InGameScreen();
 		renderer.setRenderable(screen);
 	}
 

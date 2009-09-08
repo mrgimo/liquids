@@ -1,12 +1,9 @@
 package ch.hsr.ifs.liquids.controller.devices;
 
-import ch.hsr.ifs.liquids.common.Audible;
-import ch.hsr.ifs.liquids.controller.devices.Devices.Port;
 import ch.hsr.ifs.liquids.controller.listeners.AccelerometerListener;
 import ch.hsr.ifs.liquids.util.list.List;
 
-public class Accelerometer extends Device implements
-		Audible<AccelerometerListener> {
+public class Accelerometer extends Device<AccelerometerListener> {
 
 	public enum Button {
 		LEFT, RIGHT, STICK_LEFT, STICK_RIGHT, STICK_UP, STICK_DOWN;
@@ -14,20 +11,21 @@ public class Accelerometer extends Device implements
 
 	private List<AccelerometerListener> listeners;
 
-	public Accelerometer(Port port) {
-		super(port);
+	@Override
+	public void plug(Port port) {
+		
 	}
 
 	@Override
-	public void removeDevice() {
+	public void unplug() {
 
 	}
 
-	public void addEventListener(AccelerometerListener listener) {
+	public void addListener(AccelerometerListener listener) {
 		listeners.add(listener);
 	}
 
-	public void removeEventListener(AccelerometerListener listener) {
+	public void removeListener(AccelerometerListener listener) {
 		listeners.remove(listener);
 	}
 
