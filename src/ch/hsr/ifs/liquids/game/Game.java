@@ -5,12 +5,13 @@ public class Game {
 	protected Player[] players;
 	protected Particle[] particles;
 
-	protected Field map;
+	protected PlayingField field;
 
 	public Game() {
 		players = Player.createPlayers();
 		particles = Particle.createParticles(players);
-		map = Field.creatField();
+
+		field = new PlayingField();
 	}
 
 }
