@@ -1,7 +1,10 @@
 package ch.hsr.ifs.liquids.widgets;
 
+import static java.awt.RenderingHints.*;
+import static java.awt.geom.AffineTransform.getScaleInstance;
+
 import java.awt.Graphics2D;
-import java.awt.RenderingHints;
+import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.nio.Buffer;
@@ -10,12 +13,15 @@ import java.nio.ByteBuffer;
 import javax.imageio.ImageIO;
 import javax.media.opengl.GL;
 
-import sun.awt.image.ByteInterleavedRaster;
 import ch.hsr.ifs.liquids.common.Renderable;
 
 public class Image implements Renderable {
 
 	public static final int NUMBER_OF_BANDS = 3;
+
+	private static final int BIT_MASK_RED = 0x00ff0000;
+	private static final int BIT_MASK_GREEN = 0x0000ff00;
+	private static final int BIT_MASK_BLUE = 0x000000ff;
 
 	private int width;
 	private int height;
@@ -32,7 +38,8 @@ public class Image implements Renderable {
 	}
 
 	public Image(String path, int width, int height) {
-		BufferedImage image = scale(readImage(path), width, height);
+		BufferedImage image = readImage(path);
+		image = scale(image, width, height);
 
 		this.width = image.getWidth();
 		this.height = image.getHeight();
@@ -41,21 +48,20 @@ public class Image implements Renderable {
 	}
 
 	private BufferedImage scale(BufferedImage image, int width, int height) {
-		int type = BufferedImage.TYPE_3BYTE_BGR;
+		int type = BufferedImage.TYPE_INT_ARGB;
 		BufferedImage scaledImage = new BufferedImage(width, height, type);
 
+		double scaleX = (double) width / image.getWidth();
+		double scaleY = (double) height / image.getHeight();
+		AffineTransform xform = getScaleInstance(scaleX, scaleY);
+		
 		Graphics2D graphics = scaledImage.createGraphics();
-
-		graphics.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
-				RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-
-		graphics.setRenderingHint(RenderingHints.KEY_RENDERING,
-				RenderingHints.VALUE_RENDER_QUALITY);
-
-		graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-				RenderingHints.VALUE_ANTIALIAS_ON);
-
-		graphics.drawImage(image, 0, 0, width, height, null);
+		graphics.setRenderingHint(KEY_INTERPOLATION, VALUE_INTERPOLATION_BICUBIC);
+		graphics.setRenderingHint(KEY_ANTIALIASING, VALUE_ANTIALIAS_ON);
+		graphics.setRenderingHint(KEY_RENDERING, VALUE_RENDER_QUALITY);
+		graphics.setRenderingHint(KEY_COLOR_RENDERING, VALUE_COLOR_RENDER_QUALITY);
+		
+		graphics.drawRenderedImage(image, xform);
 		graphics.dispose();
 
 		return scaledImage;
@@ -72,28 +78,49 @@ public class Image implements Renderable {
 	}
 
 	protected byte[] getPixels(BufferedImage image) {
-		ByteInterleavedRaster raster = (ByteInterleavedRaster) image.getData();
-		byte[] pixels = raster.getByteData(0, 0, width, height, (byte[]) null);
+		byte[] pixels = new byte[width * height * NUMBER_OF_BANDS];
+		for (int y = 0; y < height; y++) {
+			for (int x = 0; x < width; x++) {
+				int index = (x + y * width) * NUMBER_OF_BANDS;
+				int pixel = image.getRGB(x, y);
+
+				pixels[index] = getRed(pixel);
+				pixels[index + 1] = getGreen(pixel);
+				pixels[index + 2] = getBlue(pixel);
+			}
+		}
 
 		swapPixels(pixels);
 
 		return pixels;
 	}
 
+	private byte getRed(int pixel) {
+		return (byte) ((pixel & BIT_MASK_RED) >> 16);
+	}
+
+	private byte getGreen(int pixel) {
+		return (byte) ((pixel & BIT_MASK_GREEN) >> 8);
+	}
+
+	private byte getBlue(int pixel) {
+		return (byte) (pixel & BIT_MASK_BLUE);
+	}
+
 	protected void swapPixels(byte[] pixels) {
 		int a = 0;
-		int b = pixels.length - 3;
+		int b = pixels.length - NUMBER_OF_BANDS;
 
 		while (a < b) {
 			swapPixel(a, b, pixels);
 
-			a += 3;
-			b -= 3;
+			a += NUMBER_OF_BANDS;
+			b -= NUMBER_OF_BANDS;
 		}
 	}
 
 	protected void swapPixel(int a, int b, byte[] pixels) {
-		for (int i = 0; i < 3; i++) {
+		for (int i = 0; i < NUMBER_OF_BANDS; i++) {
 			swap(a + i, b + i, pixels);
 		}
 	}

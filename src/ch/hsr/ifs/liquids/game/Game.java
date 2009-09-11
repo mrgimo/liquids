@@ -1,6 +1,10 @@
 package ch.hsr.ifs.liquids.game;
 
-public class Game {
+import javax.media.opengl.GL;
+
+import ch.hsr.ifs.liquids.common.Renderable;
+
+public class Game implements Renderable {
 
 	protected Player[] players;
 	protected Particle[] particles;
@@ -12,6 +16,18 @@ public class Game {
 		particles = Particle.createParticles(players);
 
 		field = new PlayingField();
+	}
+
+	public void render(GL gl) {
+		field.render(gl);
+
+		for (Particle particle : particles) {
+			particle.render(gl);
+		}
+
+		for (Player player : players) {
+			player.render(gl);
+		}
 	}
 
 }

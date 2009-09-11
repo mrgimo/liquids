@@ -7,8 +7,8 @@ import ch.hsr.ifs.liquids.widgets.Image;
 
 public class Bounds {
 
-	private static final Particle ACCESSIBLE = new Particle();
-	private static final Particle BOUNDS = null;
+	protected static final Particle ACCESSIBLE = new Particle();
+	protected static final Particle BOUNDS = null;
 
 	protected int gridSize;
 
@@ -17,33 +17,30 @@ public class Bounds {
 
 	protected Particle[] bounds;
 
-	public Bounds(Image image) {
-		gridSize = getGridSize();
+	public Bounds(String imagePath) {
+		gridSize = (Integer) Config.map.get("gridSize");
 
 		Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
 		width = calcWidth(screen.width);
 		height = calcHeight(screen.height);
 
+		Image image = new Image(imagePath, width, height);
 		bounds = initBounds(image);
 	}
 
-	private int getGridSize() {
-		return (Integer) Config.map.get("gridSize");
-	}
-
-	private int calcWidth(int screenWidth) {
+	protected int calcWidth(int screenWidth) {
 		return subtractOffcut(screenWidth, gridSize) / gridSize;
 	}
 
-	private int calcHeight(int screenHeight) {
+	protected int calcHeight(int screenHeight) {
 		return subtractOffcut(screenHeight, gridSize) / gridSize;
 	}
 
-	private int subtractOffcut(int value, int factor) {
+	protected int subtractOffcut(int value, int factor) {
 		return value - value % factor;
 	}
 
-	private Particle[] initBounds(Image image) {
+	protected Particle[] initBounds(Image image) {
 		byte[] pixels = (byte[]) image.getPixelBuffer().array();
 
 		Particle[] bounds = new Particle[width * height];
@@ -54,7 +51,7 @@ public class Bounds {
 		return bounds;
 	}
 
-	private Particle extractBoundsValue(int index, byte[] pixels) {
+	protected Particle extractBoundsValue(int index, byte[] pixels) {
 		int blackPixels = 0;
 		int whitePixels = 0;
 
@@ -75,13 +72,13 @@ public class Bounds {
 		return blackPixels > whitePixels ? BOUNDS : ACCESSIBLE;
 	}
 
-	private int calcPixelIndex(int index) {
+	protected int calcPixelIndex(int index) {
 		int x = index % width * gridSize;
 		int y = index / width * gridSize;
 		return x + y * width * gridSize;
 	}
 
-	private byte[] getSample(int pixel, byte[] pixels) {
+	protected byte[] getSample(int pixel, byte[] pixels) {
 		int index = pixel * Image.NUMBER_OF_BANDS;
 
 		byte red = pixels[index];
@@ -91,8 +88,20 @@ public class Bounds {
 		return new byte[] { red, green, blue };
 	}
 
-	private boolean isBlack(byte[] sample) {
+	protected boolean isBlack(byte[] sample) {
 		return sample[0] == 0 && sample[1] == 0 && sample[2] == 0;
+	}
+
+	public boolean hasParticleAt(int index) {
+		return bounds[index] != BOUNDS && !isAccessible(index);
+	}
+
+	public boolean isAccessible(int index) {
+		return bounds[index] == ACCESSIBLE;
+	}
+
+	public Particle getParticleAt(int index) {
+		return bounds[index];
 	}
 
 }

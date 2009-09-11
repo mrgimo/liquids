@@ -10,7 +10,7 @@ import javax.swing.JFrame;
 
 import ch.hsr.ifs.liquids.common.Renderable;
 import ch.hsr.ifs.liquids.game.engines.RenderingEngine;
-import ch.hsr.ifs.liquids.widgets.screens.InGameScreen;
+import ch.hsr.ifs.liquids.widgets.InGameScreen;
 
 public class Liquids {
 

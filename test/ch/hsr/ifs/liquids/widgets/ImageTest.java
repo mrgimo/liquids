@@ -11,6 +11,8 @@ import javax.imageio.ImageIO;
 import org.junit.Before;
 import org.junit.Test;
 
+import ch.hsr.ifs.liquids.widgets.Image;
+
 public class ImageTest {
 	
 	private static final String IMAGE_PATH = "test_data/test_image.png";
