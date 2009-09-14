@@ -17,10 +17,10 @@ import ch.hsr.ifs.liquids.util.list.List;
 
 public class Mouse extends Device<MouseListener> {
 
-	public enum Button {
+	public enum MouseButton {
 		NO_BUTTON, LEFT, RIGHT, MIDDLE;
 
-		public static Button getByID(int id) {
+		public static MouseButton getByID(int id) {
 			return values()[id];
 		}
 
@@ -34,12 +34,8 @@ public class Mouse extends Device<MouseListener> {
 			isPressed = false;
 		}
 
-		public void invert() {
-			if (isPressed) {
-				release();
-			} else {
-				press();
-			}
+		public void invertIsPressed() {
+			isPressed = isPressed ? false : true;
 		}
 
 		public boolean isPressed() {

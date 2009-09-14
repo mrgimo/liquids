@@ -3,7 +3,7 @@ package ch.hsr.ifs.liquids.controller.events;
 import java.awt.AWTEvent;
 
 import ch.hsr.ifs.liquids.controller.Event;
-import ch.hsr.ifs.liquids.controller.devices.Mouse.Button;
+import ch.hsr.ifs.liquids.controller.devices.Mouse.MouseButton;
 import ch.hsr.ifs.liquids.util.Vector;
 
 public class MouseEvent extends Event {
@@ -16,16 +16,16 @@ public class MouseEvent extends Event {
 		Vector position = new Vector(x, y);
 
 		int id = mouseEvent.getButton();
-		Button button = Button.getByID(id);
-		button.invert();
+		MouseButton button = MouseButton.getByID(id);
+		button.invertIsPressed();
 
 		return new MouseEvent(position, button);
 	}
 
 	private Vector position;
-	private Button changedButton;
+	private MouseButton changedButton;
 
-	public MouseEvent(Vector position, Button changedButton) {
+	public MouseEvent(Vector position, MouseButton changedButton) {
 		this.position = position;
 		this.changedButton = changedButton;
 	}
@@ -34,7 +34,7 @@ public class MouseEvent extends Event {
 		return position;
 	}
 
-	public Button getChangedButton() {
+	public MouseButton getChangedButton() {
 		return changedButton;
 	}
 

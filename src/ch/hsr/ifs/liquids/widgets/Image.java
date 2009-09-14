@@ -28,15 +28,6 @@ public class Image implements Renderable {
 
 	private Buffer pixelBuffer;
 
-	public Image(String path) {
-		BufferedImage image = readImage(path);
-
-		width = image.getWidth();
-		height = image.getHeight();
-
-		pixelBuffer = ByteBuffer.wrap(getPixels(image));
-	}
-
 	public Image(String path, int width, int height) {
 		BufferedImage image = readImage(path);
 		image = scale(image, width, height);
@@ -44,7 +35,8 @@ public class Image implements Renderable {
 		this.width = image.getWidth();
 		this.height = image.getHeight();
 
-		pixelBuffer = ByteBuffer.wrap(getPixels(image));
+		byte[] pixels = getPixels(image);
+		pixelBuffer = ByteBuffer.wrap(pixels);
 	}
 
 	private BufferedImage scale(BufferedImage image, int width, int height) {
@@ -56,15 +48,19 @@ public class Image implements Renderable {
 		AffineTransform xform = getScaleInstance(scaleX, scaleY);
 		
 		Graphics2D graphics = scaledImage.createGraphics();
-		graphics.setRenderingHint(KEY_INTERPOLATION, VALUE_INTERPOLATION_BICUBIC);
-		graphics.setRenderingHint(KEY_ANTIALIASING, VALUE_ANTIALIAS_ON);
-		graphics.setRenderingHint(KEY_RENDERING, VALUE_RENDER_QUALITY);
-		graphics.setRenderingHint(KEY_COLOR_RENDERING, VALUE_COLOR_RENDER_QUALITY);
+		setRenderingHints(graphics);
 		
 		graphics.drawRenderedImage(image, xform);
 		graphics.dispose();
 
 		return scaledImage;
+	}
+
+	private void setRenderingHints(Graphics2D graphics) {
+		graphics.setRenderingHint(KEY_INTERPOLATION, VALUE_INTERPOLATION_BICUBIC);
+		graphics.setRenderingHint(KEY_ANTIALIASING, VALUE_ANTIALIAS_ON);
+		graphics.setRenderingHint(KEY_RENDERING, VALUE_RENDER_QUALITY);
+		graphics.setRenderingHint(KEY_COLOR_RENDERING, VALUE_COLOR_RENDER_QUALITY);
 	}
 
 	private BufferedImage readImage(String path) {

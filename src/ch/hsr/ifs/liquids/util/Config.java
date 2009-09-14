@@ -1,4 +1,4 @@
-package ch.hsr.ifs.liquids.game;
+package ch.hsr.ifs.liquids.util;
 
 import java.io.File;
 import java.io.FileNotFoundException;

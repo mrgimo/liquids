@@ -5,6 +5,7 @@ import java.util.Map;
 import javax.media.opengl.GL;
 
 import ch.hsr.ifs.liquids.common.Renderable;
+import ch.hsr.ifs.liquids.util.Config;
 import ch.hsr.ifs.liquids.widgets.Image;
 
 public class PlayingField implements Renderable {
@@ -14,7 +15,7 @@ public class PlayingField implements Renderable {
 
 	public PlayingField() {
 		Map<String, String> config = getConfig();
-		
+
 		bounds = initBounds(config);
 		texture = initTexture(config);
 	}
@@ -39,6 +40,5 @@ public class PlayingField implements Renderable {
 	public void render(GL gl) {
 		texture.render(gl);
 	}
-
 
 }

@@ -2,48 +2,36 @@ package ch.hsr.ifs.liquids.widgets;
 
 import static org.junit.Assert.assertEquals;
 
-import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
-
-import javax.imageio.ImageIO;
 
 import org.junit.Before;
 import org.junit.Test;
 
-import ch.hsr.ifs.liquids.widgets.Image;
-
 public class ImageTest {
-	
+
 	private static final String IMAGE_PATH = "test_data/test_image.png";
-	
+
+	private static final int width = 800;
+	private static final int height = 600;
+
 	private Image image;
 
 	@Before
 	public void init() {
-		image = new Image(IMAGE_PATH);
+		image = new Image(IMAGE_PATH, width, height);
 	}
 
 	@Test
-	public void testGetPixelsFrom() throws IOException {
-		BufferedImage bufferedImage = ImageIO.read(new File(IMAGE_PATH));
-		byte[] pixels = image.getPixels(bufferedImage);
-
-		int expectedLength = image.getWidth() * image.getHeight() * Image.NUMBER_OF_BANDS;
-		int actualLength = pixels.length;
-
-		assertEquals(expectedLength, actualLength);
-	}
-	
-	@Test
-	public void testSwapPixels(){
-		byte[] pixels1 = {
-				87, 23, 85,
-				34, 65, 38,
-				21, 30, 89,
-				93, 58, 91
-		};
+	public void testGetPixels() throws IOException {
+		byte[] pixels = (byte[]) image.getPixelBuffer().array();
 		
+		assertEquals(width * height * Image.NUMBER_OF_BANDS, pixels.length);
+	}
+
+	@Test
+	public void testSwapPixels() {
+		byte[] pixels1 = { 87, 23, 85, 34, 65, 38, 21, 30, 89, 93, 58, 91 };
+
 		image.swapPixels(pixels1);
 
 		assertEquals(93, pixels1[0]);
@@ -62,11 +50,11 @@ public class ImageTest {
 		assertEquals(23, pixels1[10]);
 		assertEquals(85, pixels1[11]);
 	}
-	
+
 	@Test
-	public void testSwapPixel(){
-		byte[] pixels = { 28, 72, 92, 53, 23, 12};
-		
+	public void testSwapPixel() {
+		byte[] pixels = { 28, 72, 92, 53, 23, 12 };
+
 		image.swapPixel(0, 3, pixels);
 
 		assertEquals(53, pixels[0]);
@@ -77,15 +65,15 @@ public class ImageTest {
 		assertEquals(72, pixels[4]);
 		assertEquals(92, pixels[5]);
 	}
-	
+
 	@Test
-	public void testSwap(){
-		byte[] array = {34, 98};
-		
+	public void testSwap() {
+		byte[] array = { 34, 98 };
+
 		image.swap(0, 1, array);
-		
+
 		assertEquals(98, array[0]);
 		assertEquals(34, array[1]);
 	}
-	
+
 }

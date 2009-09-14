@@ -5,6 +5,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import ch.hsr.ifs.liquids.widgets.Image;
@@ -13,51 +14,49 @@ public class BoundsTest {
 
 	private static final String TEST_IMAGE_PATH = "test_data/test_bounds.png";
 
+	private static final int NUMBER_OF_BANDS = 3;
+
+	private static final int GRID_SIZE = 2;
+
+	private static final int WIDTH = 2;
+	private static final int HEIGHT = 2;
+
+	private static byte[] pixels;
+
 	private Bounds bounds;
 
-	byte[] pixels = { 32, 78, 24, 67, 32, 4, 23, 92, 45, 29, 45, 34, 67, 32, 4,
-			23, 92, 45, 29, 45, 34, 78, 89, 28, 67, 32, 4, 23, 92, 45, 29, 45,
-			34, 78, 89, 28, 67, 32, 4, 23, 92, 45, 29, 45, 34, 78, 89, 28, 67,
-			32, 4, 23, 92, 45, 29, 45, 34, 78, 89, 28, 67, 32, 4, 23, 92, 45,
-			29, 45, 34, 78, 89, 28, 67, 32, 4, 23, 92, 45, 29, 45, 34, 78, 89,
-			28, 67, 32, 4, 23, 92, 45, 29, 45, 34, 78, 89, 28, 67, 32, 4, 23,
-			92, 45, 29, 45, 34, 78, 89, 28, 67, 32, 4, 23, 92, 45, 29, 45, 34,
-			78, 89, 28, 67, 32, 4, 23, 92, 45, 29, 45, 34, 78, 89, 28, 67, 32,
-			4, 23, 92, 45, 29, 45, 34, 78, 89, 28, 67, 32, 4, 23, 92, 45, 29,
-			45, 34, 78, 89, 28, 67, 32, 4, 23, 92, 45, 29, 45, 34, 78, 89, 28,
-			67, 32, 4, 23, 92, 45, 29, 45, 34, 78, 89, 28, 67, 32, 4, 23, 92,
-			45, 29, 45, 34, 78, 89, 28, 67, 32, 4, 23, 92, 45, 29, 45, 34, 78,
-			89, 28, 67, 32, 4, 23, 92, 45, 29, 45, 34, 78, 89, 28, 67, 32, 4,
-			23, 92, 45, 29, 45, 34, 78, 89, 28, 67, 32, 4, 23, 92, 45, 29, 45,
-			34, 78, 89, 28, 67, 32, 4, 23, 92, 45, 29, 45, 34, 78, 89, 28, 67,
-			32, 4, 23, 92, 45, 29, 45, 34, 78, 89, 28, 67, 32, 4, 23, 92, 45,
-			29, 45, 34, 78, 89, 28, 67, 32, 4, 23, 92, 45, 29, 45, 34, 78, 89,
-			28, 78, 89, 28, 73, 84, 87 };
+	@BeforeClass
+	public static void setUpClass() {
+		int size = WIDTH * HEIGHT * GRID_SIZE * GRID_SIZE * NUMBER_OF_BANDS;
+		pixels = new byte[size];
+
+		for (int i = 0; i < pixels.length; i++) {
+			byte band = ((Double) (Math.random() * 255)).byteValue();
+			pixels[i] = band;
+		}
+	}
 
 	@Before
 	public void setUp() {
-		bounds = new Bounds(null);
+		bounds = new Bounds(TEST_IMAGE_PATH);
+
+		bounds.bounds = new Particle[WIDTH * HEIGHT];
+
+		bounds.gridSize = GRID_SIZE;
+
+		bounds.width = WIDTH;
+		bounds.height = HEIGHT;
 	}
 
 	@Test
 	public void testInitBounds() {
-		int width = 100;
-		int height = 100;
-
-		bounds.gridSize = 5;
-		bounds.width = width;
-
-		Image image = new Image(TEST_IMAGE_PATH, width, height);
+		Image image = new Image(TEST_IMAGE_PATH, WIDTH * GRID_SIZE, HEIGHT * GRID_SIZE);
 		bounds.initBounds(image);
 	}
 
 	@Test
 	public void testExtractBoundsValue() {
-		bounds.gridSize = 2;
-		bounds.width = 3;
-
 		int index = 2;
-
 		Particle actual = bounds.extractBoundsValue(index, pixels);
 
 		assertEquals(Bounds.ACCESSIBLE, actual);
@@ -65,13 +64,12 @@ public class BoundsTest {
 
 	@Test
 	public void testCalcPixelIndex() {
-		bounds.gridSize = 2;
-		bounds.width = 3;
+		int index = 1;
 
-		int index = 5;
+		int expected = GRID_SIZE;
 		int actual = bounds.calcPixelIndex(index);
 
-		assertEquals(16, actual);
+		assertEquals(expected, actual);
 	}
 
 	@Test
@@ -80,9 +78,9 @@ public class BoundsTest {
 
 		byte[] samples = bounds.getSample(pixel, pixels);
 
-		assertEquals(67, samples[0]);
-		assertEquals(32, samples[1]);
-		assertEquals(4, samples[2]);
+		assertEquals(pixels[pixel * NUMBER_OF_BANDS], samples[0]);
+		assertEquals(pixels[pixel * NUMBER_OF_BANDS + 1], samples[1]);
+		assertEquals(pixels[pixel * NUMBER_OF_BANDS + 2], samples[2]);
 	}
 
 	@Test

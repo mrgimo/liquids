@@ -9,7 +9,7 @@ import java.awt.event.WindowEvent;
 import javax.swing.JFrame;
 
 import ch.hsr.ifs.liquids.common.Renderable;
-import ch.hsr.ifs.liquids.game.engines.RenderingEngine;
+import ch.hsr.ifs.liquids.engines.RenderingEngine;
 import ch.hsr.ifs.liquids.widgets.InGameScreen;
 
 public class Liquids {

@@ -8,6 +8,7 @@ import ch.hsr.ifs.liquids.common.Movable;
 import ch.hsr.ifs.liquids.common.Renderable;
 import ch.hsr.ifs.liquids.controller.devices.Device;
 import ch.hsr.ifs.liquids.util.Color;
+import ch.hsr.ifs.liquids.util.Config;
 
 public class Player implements Movable, Renderable {
 

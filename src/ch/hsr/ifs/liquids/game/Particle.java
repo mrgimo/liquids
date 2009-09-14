@@ -5,6 +5,7 @@ import javax.media.opengl.GL;
 import ch.hsr.ifs.liquids.common.Movable;
 import ch.hsr.ifs.liquids.common.Renderable;
 import ch.hsr.ifs.liquids.util.Color;
+import ch.hsr.ifs.liquids.util.Config;
 import ch.hsr.ifs.liquids.util.Vector;
 
 public class Particle implements Renderable, Movable {

@@ -3,6 +3,7 @@ package ch.hsr.ifs.liquids.game;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 
+import ch.hsr.ifs.liquids.util.Config;
 import ch.hsr.ifs.liquids.widgets.Image;
 
 public class Bounds {
@@ -21,19 +22,22 @@ public class Bounds {
 		gridSize = (Integer) Config.map.get("gridSize");
 
 		Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
-		width = calcWidth(screen.width);
-		height = calcHeight(screen.height);
+		int widthInPixels = calcWidthInPixels(screen.width);
+		int heightInPixels = calcHeightInPixels(screen.height);
 
-		Image image = new Image(imagePath, width, height);
+		width = widthInPixels / gridSize;
+		height = heightInPixels / gridSize;
+
+		Image image = new Image(imagePath, widthInPixels, heightInPixels);
 		bounds = initBounds(image);
 	}
 
-	protected int calcWidth(int screenWidth) {
-		return subtractOffcut(screenWidth, gridSize) / gridSize;
+	protected int calcWidthInPixels(int screenWidth) {
+		return subtractOffcut(screenWidth, gridSize);
 	}
 
-	protected int calcHeight(int screenHeight) {
-		return subtractOffcut(screenHeight, gridSize) / gridSize;
+	protected int calcHeightInPixels(int screenHeight) {
+		return subtractOffcut(screenHeight, gridSize);
 	}
 
 	protected int subtractOffcut(int value, int factor) {
@@ -75,6 +79,7 @@ public class Bounds {
 	protected int calcPixelIndex(int index) {
 		int x = index % width * gridSize;
 		int y = index / width * gridSize;
+
 		return x + y * width * gridSize;
 	}
 
