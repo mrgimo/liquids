@@ -1,25 +1,25 @@
 package ch.hsr.ifs.liquids.widgets;
 
 import ch.hsr.ifs.liquids.common.Renderable;
-import ch.hsr.ifs.liquids.controller.listeners.AccelerometerListener;
-import ch.hsr.ifs.liquids.controller.listeners.KeyboardListener;
-import ch.hsr.ifs.liquids.controller.listeners.MouseListener;
 import ch.hsr.ifs.liquids.util.Vector;
 
 public abstract class Element implements Renderable {
 
+	protected int width;
+	protected int height;
+
 	protected Vector position;
 
-	public void addMouseListener(MouseListener listener) {
-		
+	public int getWidth() {
+		return width;
 	}
 
-	public void addKeyboardListener(KeyboardListener listener) {
-
+	public int getHeight() {
+		return height;
 	}
 
-	public void addAccelerometerListener(AccelerometerListener listener) {
-
+	public Vector getPosition() {
+		return position;
 	}
 
 }

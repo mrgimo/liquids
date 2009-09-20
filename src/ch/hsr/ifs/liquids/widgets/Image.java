@@ -1,6 +1,13 @@
 package ch.hsr.ifs.liquids.widgets;
 
-import static java.awt.RenderingHints.*;
+import static java.awt.RenderingHints.KEY_ANTIALIASING;
+import static java.awt.RenderingHints.KEY_COLOR_RENDERING;
+import static java.awt.RenderingHints.KEY_INTERPOLATION;
+import static java.awt.RenderingHints.KEY_RENDERING;
+import static java.awt.RenderingHints.VALUE_ANTIALIAS_ON;
+import static java.awt.RenderingHints.VALUE_COLOR_RENDER_QUALITY;
+import static java.awt.RenderingHints.VALUE_INTERPOLATION_BICUBIC;
+import static java.awt.RenderingHints.VALUE_RENDER_QUALITY;
 import static java.awt.geom.AffineTransform.getScaleInstance;
 
 import java.awt.Graphics2D;
@@ -13,43 +20,38 @@ import java.nio.ByteBuffer;
 import javax.imageio.ImageIO;
 import javax.media.opengl.GL;
 
-import ch.hsr.ifs.liquids.common.Renderable;
+public class Image extends Element {
 
-public class Image implements Renderable {
+	private static final int RED_SHIFT = 16;
+	private static final int GREEN_SHIFT = 8;
+	private static final int BLUE_SHIFT = 0;
 
 	public static final int NUMBER_OF_BANDS = 3;
-
-	private static final int BIT_MASK_RED = 0x00ff0000;
-	private static final int BIT_MASK_GREEN = 0x0000ff00;
-	private static final int BIT_MASK_BLUE = 0x000000ff;
-
-	private int width;
-	private int height;
 
 	private Buffer pixelBuffer;
 
 	public Image(String path, int width, int height) {
-		BufferedImage image = readImage(path);
-		image = scale(image, width, height);
+		this.width = width;
+		this.height = height;
 
-		this.width = image.getWidth();
-		this.height = image.getHeight();
+		BufferedImage image = readImage(path);
+		image = scale(image);
 
 		byte[] pixels = getPixels(image);
 		pixelBuffer = ByteBuffer.wrap(pixels);
 	}
 
-	private BufferedImage scale(BufferedImage image, int width, int height) {
+	private BufferedImage scale(BufferedImage image) {
 		int type = BufferedImage.TYPE_INT_ARGB;
 		BufferedImage scaledImage = new BufferedImage(width, height, type);
 
 		double scaleX = (double) width / image.getWidth();
 		double scaleY = (double) height / image.getHeight();
 		AffineTransform xform = getScaleInstance(scaleX, scaleY);
-		
+
 		Graphics2D graphics = scaledImage.createGraphics();
 		setRenderingHints(graphics);
-		
+
 		graphics.drawRenderedImage(image, xform);
 		graphics.dispose();
 
@@ -57,10 +59,12 @@ public class Image implements Renderable {
 	}
 
 	private void setRenderingHints(Graphics2D graphics) {
-		graphics.setRenderingHint(KEY_INTERPOLATION, VALUE_INTERPOLATION_BICUBIC);
+		graphics.setRenderingHint(KEY_INTERPOLATION,
+				VALUE_INTERPOLATION_BICUBIC);
 		graphics.setRenderingHint(KEY_ANTIALIASING, VALUE_ANTIALIAS_ON);
 		graphics.setRenderingHint(KEY_RENDERING, VALUE_RENDER_QUALITY);
-		graphics.setRenderingHint(KEY_COLOR_RENDERING, VALUE_COLOR_RENDER_QUALITY);
+		graphics.setRenderingHint(KEY_COLOR_RENDERING,
+				VALUE_COLOR_RENDER_QUALITY);
 	}
 
 	private BufferedImage readImage(String path) {
@@ -92,15 +96,15 @@ public class Image implements Renderable {
 	}
 
 	private byte getRed(int pixel) {
-		return (byte) ((pixel & BIT_MASK_RED) >> 16);
+		return (byte) (pixel >> RED_SHIFT);
 	}
 
 	private byte getGreen(int pixel) {
-		return (byte) ((pixel & BIT_MASK_GREEN) >> 8);
+		return (byte) (pixel >> GREEN_SHIFT);
 	}
 
 	private byte getBlue(int pixel) {
-		return (byte) (pixel & BIT_MASK_BLUE);
+		return (byte) (pixel >> BLUE_SHIFT);
 	}
 
 	protected void swapPixels(byte[] pixels) {
@@ -130,14 +134,6 @@ public class Image implements Renderable {
 	public void render(GL gl) {
 		gl.glDrawPixels(width, height, GL.GL_RGB, GL.GL_UNSIGNED_BYTE,
 				pixelBuffer);
-	}
-
-	public int getWidth() {
-		return width;
-	}
-
-	public int getHeight() {
-		return height;
 	}
 
 	public Buffer getPixelBuffer() {

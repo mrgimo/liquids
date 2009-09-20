@@ -1,48 +1,27 @@
 package ch.hsr.ifs.liquids.game;
 
-import java.util.Map;
-
 import javax.media.opengl.GL;
 
-import ch.hsr.ifs.liquids.common.Movable;
 import ch.hsr.ifs.liquids.common.Renderable;
-import ch.hsr.ifs.liquids.controller.devices.Device;
+import ch.hsr.ifs.liquids.devices.Device;
 import ch.hsr.ifs.liquids.util.Color;
-import ch.hsr.ifs.liquids.util.Config;
 
-public class Player implements Movable, Renderable {
+public class Player implements Renderable {
 
-	public String name;
-	public Color color;
-	public Device<?> device;
+	protected Color color;
+	protected Device device;
 
-	public static Player[] createPlayers() {
-		Player[] players = new Player[Config.players.size()];
-
-		int i = 0;
-		for (Map<String, String> config : Config.players) {
-			Player player = new Player();
-
-			String name = config.get("name");
-			String color = config.get("color");
-			String device = config.get("device");
-
-			player.name = name;
-			player.color = Color.getColorByName(color);
-			player.device = Device.getDeviceByName(device);
-
-			players[i++] = player;
-		}
-
-		return players;
-	}
-
-	public void move() {
-
-	}
+	protected int numberOfParticles;
 
 	public void render(GL gl) {
+		gl.glColor3f(color.red, color.green, color.blue);
 
+		gl.glBegin(GL.GL_POLYGON);
+		gl.glVertex3f(device.getX() - 5, device.getY() - 5, 0);
+		gl.glVertex3f(device.getX() + 5, device.getY() - 5, 0);
+		gl.glVertex3f(device.getX() + 5, device.getY() + 5, 0);
+		gl.glVertex3f(device.getX() - 5, device.getY() + 5, 0);
+		gl.glEnd();
 	}
 
 }

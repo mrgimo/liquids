@@ -8,24 +8,34 @@ import java.awt.event.WindowEvent;
 
 import javax.swing.JFrame;
 
-import ch.hsr.ifs.liquids.common.Renderable;
+import ch.hsr.ifs.liquids.engines.PhysicsEngine;
 import ch.hsr.ifs.liquids.engines.RenderingEngine;
-import ch.hsr.ifs.liquids.widgets.InGameScreen;
+import ch.hsr.ifs.liquids.game.Config;
+import ch.hsr.ifs.liquids.game.Game;
 
 public class Liquids {
 
 	private Frame frame;
-	private RenderingEngine renderer;
+
+	private RenderingEngine renderingEngine;
+	private PhysicsEngine physicsEngine;
+
+	private Game game = Config.createGame();
 
 	public Liquids() {
 		frame = new JFrame();
 		setupFrame();
 
-		renderer = new RenderingEngine(frame);
-		setupRenderer();
+		renderingEngine = new RenderingEngine(frame);
+		setupRenderingEngine();
+
+		physicsEngine = new PhysicsEngine();
+		setupPhysicsEngine();
 
 		frame.setVisible(true);
-		renderer.start();
+
+		renderingEngine.start();
+		physicsEngine.start();
 	}
 
 	private void setupFrame() {
@@ -43,7 +53,9 @@ public class Liquids {
 			@Override
 			public void windowClosing(WindowEvent e) {
 				frame.setVisible(false);
-				renderer.stop();
+
+				renderingEngine.stop();
+				physicsEngine.stop();
 
 				System.exit(0);
 			}
@@ -56,9 +68,12 @@ public class Liquids {
 		device.setFullScreenWindow(window);
 	}
 
-	private void setupRenderer() {
-		Renderable screen = new InGameScreen();
-		renderer.setRenderable(screen);
+	private void setupRenderingEngine() {
+		renderingEngine.setRenderable(game);
+	}
+
+	private void setupPhysicsEngine() {
+		physicsEngine.setMovable(game);
 	}
 
 	public static void main(String[] args) {

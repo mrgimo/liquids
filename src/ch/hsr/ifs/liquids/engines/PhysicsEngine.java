@@ -1,20 +1,17 @@
 package ch.hsr.ifs.liquids.engines;
 
 import ch.hsr.ifs.liquids.common.Movable;
-import ch.hsr.ifs.liquids.util.list.List;
 
 public class PhysicsEngine {
 
 	private static final int MOTION_INTERVAL = 5;
 
 	private Thread motionThread;
-	private List<Movable> movables;
+	private Movable movable;
 
 	private boolean isRunning = false;
 
-	public PhysicsEngine(List<Movable> movables) {
-		this.movables = movables;
-
+	public PhysicsEngine() {
 		initMotionThread();
 	}
 
@@ -25,9 +22,7 @@ public class PhysicsEngine {
 			public void run() {
 				while (isRunning) {
 					try {
-						for (Movable movable : movables) {
-							movable.move();
-						}
+						movable.move();
 
 						sleep(MOTION_INTERVAL);
 					} catch (InterruptedException e) {
@@ -46,6 +41,10 @@ public class PhysicsEngine {
 
 	public void stop() {
 		isRunning = false;
+	}
+
+	public void setMovable(Movable movable) {
+		this.movable = movable;
 	}
 
 }
