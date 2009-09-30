@@ -13,9 +13,7 @@ public class Random {
 
 	public static float random() {
 		index++;
-		index %= RANDOM.length;
-
-		return RANDOM[index];
+		return RANDOM[index %= RANDOM.length];
 	}
 
 }

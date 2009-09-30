@@ -1,12 +1,29 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<project name="JFrontEnd" default="test" basedir=".">
+<project name="Liquids" default="release" basedir=".">
+
+	<property name="name" value="liquids" />
+	<property name="version" value="0.9.0" />
+	<property name="release" value="${name}-${version}" />
+
 	<property name="bin.dir" location="bin" />
 	<property name="src.dir" location="src" />
 	<property name="test.dir" location="test" />
 	<property name="lib.dir" location="lib" />
+	<property name="scripts.dir" location="scripts" />
+	<property name="native.dir" location="native" />
+	<property name="data.dir" location="data" />
+	<property name="dist.dir" location="release" />
+
 	<property name="bin.prod.dir" location="${bin.dir}/prod" />
 	<property name="bin.test.dir" location="${bin.dir}/test" />
-	<property name="test.report.dir" location="${bin.dir}/test-reports" />
+	<property name="bin.report.dir" location="${bin.dir}/report" />
+
+	<property name="dist.lib.dir" location="${dist.dir}/lib" />
+	<property name="dist.native.dir" location="${dist.dir}/native" />
+	<property name="dist.data.dir" location="${dist.dir}/data" />
+
+	<property name="jar.name" value="${name}.jar" />
+	<property name="jar.path" location="${dist.dir}/${jar.name}" />
 
 	<path id="project.classpath">
 		<pathelement location="${bin.prod.dir}" />
@@ -18,12 +35,17 @@
 
 	<target name="clean">
 		<delete dir="${bin.dir}" />
+		<delete dir="${dist.dir}" />
 	</target>
 
 	<target name="prepare" depends="clean">
 		<mkdir dir="${bin.prod.dir}" />
 		<mkdir dir="${bin.test.dir}" />
-		<mkdir dir="${test.report.dir}" />
+		<mkdir dir="${bin.report.dir}" />
+
+		<mkdir dir="${dist.lib.dir}" />
+		<mkdir dir="${dist.data.dir}" />
+		<mkdir dir="${dist.native.dir}" />
 	</target>
 
 	<target name="compile" depends="prepare">
@@ -41,12 +63,46 @@
 	<target name="test" depends="compile-tests">
 		<junit errorproperty="test.failed" failureproperty="test.failed">
 			<classpath refid="project.classpath" />
-			<formatter type="brief" usefile="false"/>
+			<formatter type="brief" usefile="false" />
 			<formatter type="xml" usefile="true" />
-			<batchtest todir="${test.report.dir}">
+			<batchtest todir="${bin.report.dir}">
 				<fileset dir="${bin.test.dir}" includes="**/*Test.class" />
 			</batchtest>
 		</junit>
 		<fail message="one or more tests failed!" if="test.failed" />
 	</target>
+
+	<target name="jar" depends="test">
+		<jar destfile="${jar.path}" basedir="${bin.prod.dir}">
+			<zipfileset includes="**/*.class" src="lib/gluegen-rt.jar" />
+			<zipfileset includes="**/*.class" src="lib/jogl.jar" />
+			<zipfileset includes="**/*.class" src="lib/jyaml-1.3.jar" />
+
+			<manifest>
+				<attribute name="Built-By" value="${user.name}" />
+				<attribute name="Main-Class" value="ch.hsr.ifs.liquids.Liquids" />
+			</manifest>
+		</jar>
+	</target>
+
+	<target name="release" depends="jar">
+		<copy todir="${dist.lib.dir}">
+			<fileset dir="${lib.dir}">
+				<exclude name="junit-4.6.jar" />
+			</fileset>
+		</copy>
+
+		<copy todir="${dist.data.dir}">
+			<fileset dir="${data.dir}" />
+		</copy>
+
+		<copy todir="${dist.native.dir}">
+			<fileset dir="${native.dir}" />
+		</copy>
+		
+		<copy todir="${dist.dir}" >
+			<fileset dir="${scripts.dir}" />
+		</copy>
+	</target>
+
 </project>

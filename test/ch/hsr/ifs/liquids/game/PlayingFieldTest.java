@@ -28,8 +28,8 @@ public class PlayingFieldTest {
 		byte[] pixels = createPixels(playingField.widthInPixels * GRID_SIZE);
 		int index = 2;
 
-		Particle particle = playingField.extractBoundsValue(index, pixels);
-		assertEquals(PlayingField.ACCESSIBLE, particle);
+		Particle bounds = playingField.extractBoundsValue(index, pixels);
+		assertEquals(PlayingField.ACCESSIBLE, bounds);
 	}
 
 	@Test

@@ -3,109 +3,119 @@ package ch.hsr.ifs.liquids.game;
 import javax.media.opengl.GL;
 
 import ch.hsr.ifs.liquids.common.Movable;
-import ch.hsr.ifs.liquids.common.Renderable;
 import ch.hsr.ifs.liquids.util.Random;
 import ch.hsr.ifs.liquids.util.Vector;
+import ch.hsr.ifs.liquids.widgets.Element;
 
-public class Particle implements Renderable, Movable {
+public class Particle extends Element implements Movable {
 
 	protected enum Direction {
 		FORWARDS, RIGHT, LEFT, BACKWARDS;
 	}
 
-	private static final float STEP = 1.8f;
+	private static final float STEP = 1f;
 	private static final float OPAQUE = 0.6f;
 
-	public static final int MAX_HEALTH = 150;
-	public static final int MIN_HEALTH = 1;
-
-	public static final int MAX_HEALING = 50;
-	public static final int MIN_HEALING = 1;
-
-	public static final int MAX_DAMAGE = 50;
-	public static final int MIN_DAMAGE = 1;
+	private static final int MAX_HEALTH = 500;
+	private static final int MIN_HEALTH = 0;
 
 	protected PlayingField playingField;
 
 	protected Player player;
-	protected Vector position;
 
 	protected int health;
 
 	protected int healing;
 	protected int damage;
 
-	public void render(GL gl) {
-		float red = player.color.red;
-		float green = player.color.green;
-		float blue = player.color.blue;
+	public final void render(GL gl) {
+		setColor(gl);
 
-		float alpha = OPAQUE * health / MAX_HEALTH;
+		float x1 = position.x;
+		float y1 = position.y;
 
-		gl.glColor4f(red, green, blue, alpha);
+		float x2 = x1 + width;
+		float y2 = y1 + height;
 
 		gl.glBegin(GL.GL_POLYGON);
-		gl.glVertex3f(position.x, position.y, 0);
-		gl.glVertex3f(position.x + playingField.gridSize, position.y, 0);
-		gl.glVertex3f(position.x + playingField.gridSize, position.y
-				+ playingField.gridSize, 0);
-		gl.glVertex3f(position.x, position.y + playingField.gridSize, 0);
+			gl.glVertex3f(x1, y1, 0);
+			gl.glVertex3f(x2, y1, 0);
+			gl.glVertex3f(x2, y2, 0);
+			gl.glVertex3f(x1, y2, 0);
 		gl.glEnd();
 	}
 
-	public void move() {
-		float x = player.device.getX() - position.x;
-		float y = player.device.getY() - position.y;
+	private final void setColor(GL gl) {
+		float r = player.color.red;
+		float g = player.color.green;
+		float b = player.color.blue;
+
+		float a = OPAQUE * health / MAX_HEALTH;
+
+		gl.glColor4f(r, g, b, a);
+	}
+
+	public final void move() {
+		float x = player.cursor.position.x - position.x;
+		float y = player.cursor.position.y - position.y;
 
 		float distance = (float) Math.sqrt(x * x + y * y);
+		if (distance == 0) {
+			return;
+		}
 
-		x *= STEP * playingField.gridSize / distance;
-		y *= STEP * playingField.gridSize / distance;
+		x *= STEP * width / distance;
+		y *= STEP * height / distance;
 
+		tryToMove(x, y);
+	}
+
+	private void tryToMove(float x, float y) {
 		for (Direction direction : Direction.values()) {
-			Vector step = calcStep(direction, x, y);
+			Vector move = calcMove(direction, x, y);
 
-			int index = playingField.positionToIndex(step);
+			int index = playingField.positionToIndex(move);
 
-			if (playingField.isBound(index)) {
+			if (playingField.isInaccessible(index)) {
 				continue;
 			}
 
 			if (playingField.isAccessible(index)) {
-				moveTo(step, index);
+				moveTo(move, index);
 				return;
-			} else {
+			}
+
+			if(direction == Direction.FORWARDS){
 				interact(index);
 			}
 		}
-
 	}
 
-	private Vector calcStep(Direction direction, float x, float y) {
-		Vector step = new Vector(position.x, position.y);
+	private final Vector calcMove(Direction direction, float x, float y) {
+		Vector move = new Vector(position.x, position.y);
 
 		switch (direction) {
 		case FORWARDS:
-			step.x += x;
-			step.y += y;
+			move.x += x;
+			move.y += y;
 
 			break;
 		case BACKWARDS:
-			step.x -= x;
-			step.y -= y;
+			move.x -= x;
+			move.y -= y;
 
 			break;
 		default:
 			boolean swap = Random.random() > 0.5;
 
-			step.x += swap ? y : -y;
-			step.y += swap ? -x : x;
+			move.x += swap ? y : -y;
+			move.y += swap ? -x : x;
 		}
 
-		return step;
+		return move;
 	}
 
-	private void moveTo(Vector newPosition, int newIndex) {
+	private final void moveTo(Vector newPosition, int newIndex) {
 		int index = playingField.positionToIndex(position);
 
 		playingField.setAccessible(index);
@@ -114,7 +124,7 @@ public class Particle implements Renderable, Movable {
 		position = newPosition;
 	}
 
-	private void interact(int index) {
+	private final void interact(int index) {
 		Particle particle = playingField.getParticle(index);
 
 		if (particle.player != player) {
@@ -124,54 +134,21 @@ public class Particle implements Renderable, Movable {
 		}
 	}
 
-	private void attack(Particle particle) {
-		particle.health -= damage;
+	private final void attack(Particle particle) {
+		if ((particle.health -= damage) <= MIN_HEALTH) {
+			--particle.player.numberOfParticles;
 
-		if (particle.health <= MIN_HEALTH) {
 			particle.player = player;
 			particle.health = MAX_HEALTH;
 
-			particle.player.numberOfParticles--;
-			player.numberOfParticles++;
+			++player.numberOfParticles;
 		}
 	}
 
-	private void heal(Particle particle) {
-		particle.health += healing;
-
-		if (particle.health > MAX_HEALTH) {
+	private final void heal(Particle particle) {
+		if ((particle.health += healing) > MAX_HEALTH) {
 			particle.health = MAX_HEALTH;
 		}
-	}
-
-	protected void setHealth(int health) {
-		if (health > MAX_HEALTH) {
-			health = MAX_HEALTH;
-		} else if (health < MIN_HEALTH) {
-			health = MIN_HEALTH;
-		}
-
-		this.health = health;
-	}
-
-	public void setHealing(int healing) {
-		if (healing > MAX_HEALING) {
-			healing = MAX_HEALING;
-		} else if (healing < MIN_HEALING) {
-			healing = MIN_HEALING;
-		}
-
-		this.healing = healing;
-	}
-
-	protected void setDamage(int damage) {
-		if (damage > MAX_DAMAGE) {
-			damage = MAX_DAMAGE;
-		} else if (damage < MAX_DAMAGE) {
-			damage = MAX_DAMAGE;
-		}
-
-		this.damage = damage;
 	}
 
 }

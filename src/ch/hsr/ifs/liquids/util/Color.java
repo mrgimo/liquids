@@ -9,7 +9,7 @@ public class Color {
 	public float blue;
 
 	public Color() {
-		red = green = blue = 0x00;
+		red = green = blue = 0;
 	}
 
 	public Color(int red, int green, int blue) {

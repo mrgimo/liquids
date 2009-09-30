@@ -10,109 +10,77 @@ public class Game implements Renderable, Movable {
 
 	protected PlayingField playingField;
 
+	protected Score score;
+
 	protected Player[] players;
 	protected Particle[] particles;
 
-	public Game(PlayingField playingField, Player[] players,
-			Particle[] particles) {
-		this.playingField = playingField;
-
-		this.players = players;
-		this.particles = particles;
-
+	public void setup() {
 		positionPlayers();
 		positionParticles();
 	}
 
 	private void positionPlayers() {
-		Vector center = getCenter();
+		float x = Config.SCREEN_WIDTH / 2;
+		float y = Config.SCREEN_HEIGHT / 2;
+
 		double radius = calcRadius();
-
-		double angle = 2 * Math.PI / players.length;
+		double angle = calcAngle();
 		for (int i = 0; i < players.length; i++) {
-			Vector position = calcPosition(center, radius, angle * i);
+			Vector position = calcPosition(x, y, radius, angle * i);
 
-			players[i].device.setX(position.x);
-			players[i].device.setY(position.y);
+			players[i].cursor.position.x = position.x;
+			players[i].cursor.position.y = position.y;
 		}
 	}
 
-	private Vector getCenter() {
-		float x = playingField.widthInPixels / 2;
-		float y = playingField.heightInPixels / 2;
-
-		return new Vector(x, y);
-	}
-
 	private double calcRadius() {
-		int width = playingField.widthInPixels;
-		int height = playingField.heightInPixels;
+		int width = Config.SCREEN_WIDTH;
+		int height = Config.SCREEN_HEIGHT;
 
 		double range = Math.min(width, height);
 
 		return range * 4 / 10;
 	}
 
+	private double calcAngle() {
+		return 2 * Math.PI / players.length;
+	}
+
 	private void positionParticles() {
-		for (Player player : players) {
-			Particle[] particles = getParticlesFrom(player);
+		Player player = null;
 
-			int circle = 0;
+		double radius = 0;
+		double angle = 0;
+		for (Particle particle : particles) {
+			if (particle.player != player) {
+				player = particle.player;
 
-			int parts = 0;
-			int part = 0;
-
-			int positioned = 0;
-			while (positioned < particles.length) {
-				if (part == parts) {
-					circle++;
-
-					parts = 4 * circle;
-					part = 0;
-				}
-
-				double radius = circle * playingField.gridSize;
-				double angle = 2 * Math.PI / parts * part;
-
-				Vector position = calcParticlePosition(player, radius, angle);
-				if (playingField.isAccessible(position)) {
-					positionParticle(particles[positioned], position);
-					positioned++;
-				}
-
-				part++;
+				radius = 0;
+				angle = 0;
 			}
-		}
-	}
 
-	private Particle[] getParticlesFrom(Player player) {
-		int size = particles.length / players.length;
-		Particle[] particles = new Particle[size];
+			Vector position;
+			do {
+				float x = player.cursor.position.x;
+				float y = player.cursor.position.y;
 
-		int i = 0;
-		for (Particle particle : this.particles) {
-			if (particle.player == player) {
-				particles[i++] = particle;
-			}
+				position = calcPosition(x, y, radius, angle);
+
+				radius += 0.01;
+				angle += 1 / radius;
+			} while (!isAccessible(position));
+
+			positionParticle(particle, position);
 		}
 
-		return particles;
 	}
 
-	private Vector calcParticlePosition(Player player, double r, double a) {
-		float centerX = player.device.getX();
-		float centerY = player.device.getY();
+	private Vector calcPosition(float x, float y, double radius, double angle) {
+		x = calcX(radius, angle) + x;
+		y = calcY(radius, angle) + y;
 
-		Vector center = new Vector(centerX, centerY);
-
-		return calcPosition(center, r, a);
-	}
-
-	private Vector calcPosition(Vector center, double radius, double angle) {
-		float x = calcX(radius, angle);
-		float y = calcY(radius, angle);
-
-		return new Vector(center.x + x, center.y + y);
+		return new Vector(x, y);
 	}
 
 	private float calcX(double radius, double angle) {
@@ -123,24 +91,35 @@ public class Game implements Renderable, Movable {
 		return (float) (Math.sin(angle) * radius);
 	}
 
-	private void positionParticle(Particle particle, Vector position) {
-		playingField.setParticle(particle, position);
-		particle.position = position;
+	private boolean isAccessible(Vector position) {
+		int index = playingField.positionToIndex(position);
+
+		return playingField.isAccessible(index);
 	}
 
-	public void render(GL gl) {
+	private void positionParticle(Particle particle, Vector position) {
+		int index = playingField.positionToIndex(position);
+
+		particle.position = position;
+		playingField.setParticle(particle, index);
+	}
+
+	public final void render(GL gl) {
 		playingField.render(gl);
 
 		for (Particle particle : particles) {
 			particle.render(gl);
 		}
 
+		score.render(gl);
+
 		for (Player player : players) {
 			player.render(gl);
 		}
+
 	}
 
-	public void move() {
+	public final void move() {
 		for (Particle particle : particles) {
 			particle.move();
 		}

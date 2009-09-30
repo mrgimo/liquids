@@ -1,8 +1,5 @@
 package ch.hsr.ifs.liquids.game;
 
-import java.awt.Dimension;
-import java.awt.Toolkit;
-
 import javax.media.opengl.GL;
 
 import ch.hsr.ifs.liquids.common.Renderable;
@@ -11,16 +8,8 @@ import ch.hsr.ifs.liquids.widgets.Image;
 
 public class PlayingField implements Renderable {
 
-	
-	protected enum Bounds {
-		ACCESSIBLE, BOUNDS, PARTICLE;
-		
-		public Particle particle;
-	}
-	
-	
-	protected static final Particle ACCESSIBLE = new Particle();
-	protected static final Particle BOUNDS = null;
+	protected static final Particle ACCESSIBLE = null;
+	protected static final Particle INACCESSIBLE = new Particle();
 
 	protected Particle[] bounds;
 	protected Renderable texture;
@@ -36,9 +25,8 @@ public class PlayingField implements Renderable {
 	public PlayingField(String boundsPath, String texturePath, int gridSize) {
 		this.gridSize = gridSize;
 
-		Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
-		widthInPixels = calcWidthInPixels(screen.width);
-		heightInPixels = calcHeightInPixels(screen.height);
+		widthInPixels = calcWidthInPixels(Config.SCREEN_WIDTH);
+		heightInPixels = calcHeightInPixels(Config.SCREEN_HEIGHT);
 
 		widthInFields = widthInPixels / gridSize;
 		heightInFields = heightInPixels / gridSize;
@@ -80,7 +68,7 @@ public class PlayingField implements Renderable {
 
 				byte[] sample = getSample(pixel, pixels);
 				if (isBlack(sample)) {
-					return BOUNDS;
+					return INACCESSIBLE;
 				}
 			}
 		}
@@ -110,34 +98,47 @@ public class PlayingField implements Renderable {
 	}
 
 	public int positionToIndex(Vector position) {
+		if (isNotOnScreen(position)) {
+			return -1;
+		}
+
 		int x = (int) position.x / gridSize;
 		int y = (int) position.y / gridSize;
 
 		return x + y * widthInFields;
 	}
 
-	public Particle getParticle(Vector position) {
-		return getParticle(positionToIndex(position));
+	private boolean isNotOnScreen(Vector position) {
+		return position.x >= widthInPixels || position.x <= 0
+				|| position.y >= widthInPixels || position.y <= 0;
 	}
 
 	public Particle getParticle(int index) {
+		if (isNotValid(index)) {
+			return INACCESSIBLE;
+		}
+
 		return bounds[index];
 	}
 
-	public void setParticle(Particle particle, Vector position) {
-		setParticle(particle, positionToIndex(position));
-	}
-
 	public void setParticle(Particle particle, int index) {
+		if (isNotValid(index)) {
+			return;
+		}
+
 		bounds[index] = particle;
 	}
 
 	public void setAccessible(int index) {
+		if (isNotValid(index)) {
+			return;
+		}
+
 		bounds[index] = ACCESSIBLE;
 	}
 
-	public boolean isAccessible(Vector position) {
-		return isAccessible(positionToIndex(position));
+	private boolean isNotValid(int index) {
+		return index < 0 || index >= bounds.length;
 	}
 
 	public boolean isAccessible(int index) {
@@ -145,13 +146,13 @@ public class PlayingField implements Renderable {
 				&& bounds[index] == ACCESSIBLE;
 	}
 
-	public boolean isBound(int index) {
-		return index < 0 || index >= bounds.length || bounds[index] == BOUNDS;
+	public boolean isInaccessible(int index) {
+		return index < 0 || index >= bounds.length
+				|| bounds[index] == INACCESSIBLE;
 	}
 
 	public void render(GL gl) {
 		texture.render(gl);
 	}
-
 
 }

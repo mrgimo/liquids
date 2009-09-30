@@ -51,11 +51,12 @@ public class RenderingEngine implements GLEventListener {
 			int height) {
 		GL gl = drawable.getGL();
 
-		gl.glViewport(0, 0, width, height);
 		gl.glEnable(GL.GL_BLEND);
 		gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
 		gl.glShadeModel(GL.GL_FLAT);
 		gl.glMatrixMode(GL.GL_PROJECTION);
+
+		gl.glViewport(0, 0, width, height);
 		gl.glLoadIdentity();
 		gl.glOrtho(0, width, 0, height, -1, 1);
 	}

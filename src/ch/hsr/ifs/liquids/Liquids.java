@@ -20,9 +20,11 @@ public class Liquids {
 	private RenderingEngine renderingEngine;
 	private PhysicsEngine physicsEngine;
 
-	private Game game = Config.createGame();
+	private Game game = Config.loadConfig().createGame();
 
 	public Liquids() {
+		game.setup();
+
 		frame = new JFrame();
 		setupFrame();
 
@@ -33,9 +35,6 @@ public class Liquids {
 		setupPhysicsEngine();
 
 		frame.setVisible(true);
-
-		renderingEngine.start();
-		physicsEngine.start();
 	}
 
 	private void setupFrame() {
@@ -70,13 +69,17 @@ public class Liquids {
 
 	private void setupRenderingEngine() {
 		renderingEngine.setRenderable(game);
+		renderingEngine.start();
 	}
 
 	private void setupPhysicsEngine() {
 		physicsEngine.setMovable(game);
+		physicsEngine.start();
 	}
 
 	public static void main(String[] args) {
+		System.setProperty("java.library.path", "native/linux");
+
 		new Liquids();
 	}
 
