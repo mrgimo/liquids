@@ -1,85 +1,86 @@
 package ch.hsr.ifs.liquids;
 
-import java.awt.Frame;
-import java.awt.GraphicsDevice;
-import java.awt.Window;
+import static ch.hsr.ifs.liquids.helpers.factories.MapFactory.createMap;
+import static ch.hsr.ifs.liquids.helpers.factories.ParticleFactory.createParticles;
+import static ch.hsr.ifs.liquids.helpers.factories.PlayerFactory.createPlayers;
+
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
-import javax.swing.JFrame;
-
-import ch.hsr.ifs.liquids.engines.PhysicsEngine;
-import ch.hsr.ifs.liquids.engines.RenderingEngine;
-import ch.hsr.ifs.liquids.game.Config;
-import ch.hsr.ifs.liquids.game.Game;
+import ch.hsr.ifs.liquids.engines.Physics;
+import ch.hsr.ifs.liquids.engines.Renderer;
+import ch.hsr.ifs.liquids.helpers.Config;
+import ch.hsr.ifs.liquids.logic.Logic;
+import ch.hsr.ifs.liquids.logic.Particle;
+import ch.hsr.ifs.liquids.logic.Player;
+import ch.hsr.ifs.liquids.logic.PlayingField;
+import ch.hsr.ifs.liquids.util.Vector;
+import ch.hsr.ifs.liquids.widgets.Window;
 
 public class Liquids {
 
-	private Frame frame;
+	private static final String CONFIG_PATH = "data/liquids.config";
 
-	private RenderingEngine renderingEngine;
-	private PhysicsEngine physicsEngine;
+	private Window window;
 
-	private Game game = Config.loadConfig().createGame();
+	private Logic logic;
+
+	private Physics physics;
+	private Renderer renderer;
 
 	public Liquids() {
-		game.setup();
+		Config config = Config.load(CONFIG_PATH);
 
-		frame = new JFrame();
-		setupFrame();
+		initWindow(config);
+		initLogic(config);
 
-		renderingEngine = new RenderingEngine(frame);
-		setupRenderingEngine();
+		physics = new Physics(logic);
+		renderer = new Renderer(logic, window);
 
-		physicsEngine = new PhysicsEngine();
-		setupPhysicsEngine();
+		physics.start();
+		renderer.start();
 
-		frame.setVisible(true);
+		window.open();
 	}
 
-	private void setupFrame() {
-		frame.addWindowListener(createWindowListener());
+	private void initLogic(Config config) {
+		PlayingField field = createMap(config);
 
-		frame.setUndecorated(true);
-		frame.setAlwaysOnTop(true);
+		Player[] players = createPlayers(config, field);
+		Particle[] particles = createParticles(config, field, players);
 
-		setFullscreen(frame);
+		logic = new Logic(field, players, particles);
 	}
 
-	private WindowAdapter createWindowListener() {
-		return new WindowAdapter() {
+	private void initWindow(Config config) {
+		window = Window.getWindow();
+
+		if (config.window.fullscreen) {
+			window.setFullscreen(true);
+		} else {
+			int x = (int) (Window.SCREEN_WIDTH / 10);
+			int y = (int) (Window.SCREEN_HEIGHT / 10);
+
+			window.setPosition(new Vector(x, y));
+			window.setSize(new Vector(x * 8, y * 8));
+		}
+
+		window.addWindowListener(new WindowAdapter() {
 
 			@Override
 			public void windowClosing(WindowEvent e) {
-				frame.setVisible(false);
+				window.close();
 
-				renderingEngine.stop();
-				physicsEngine.stop();
+				renderer.stop();
+				physics.stop();
 
 				System.exit(0);
 			}
 
-		};
-	}
-
-	private void setFullscreen(Window window) {
-		GraphicsDevice device = window.getGraphicsConfiguration().getDevice();
-		device.setFullScreenWindow(window);
-	}
-
-	private void setupRenderingEngine() {
-		renderingEngine.setRenderable(game);
-		renderingEngine.start();
-	}
-
-	private void setupPhysicsEngine() {
-		physicsEngine.setMovable(game);
-		physicsEngine.start();
+		});
 	}
 
 	public static void main(String[] args) {
-		System.setProperty("java.library.path", "native/linux");
-
 		new Liquids();
 	}
 
