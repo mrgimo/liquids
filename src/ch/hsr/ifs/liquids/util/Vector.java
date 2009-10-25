@@ -29,7 +29,7 @@ public class Vector {
 		this.z = z;
 	}
 
-	public float getX() {
+	public final float getX() {
 		try {
 			xLock.lock();
 			return x;
@@ -38,7 +38,7 @@ public class Vector {
 		}
 	}
 
-	public void setX(float x) {
+	public final void setX(final float x) {
 		try {
 			xLock.lock();
 			this.x = x;
@@ -47,7 +47,7 @@ public class Vector {
 		}
 	}
 
-	public float getY() {
+	public final float getY() {
 		try {
 			yLock.lock();
 			return y;
@@ -56,7 +56,7 @@ public class Vector {
 		}
 	}
 
-	public void setY(float y) {
+	public final void setY(final float y) {
 		try {
 			yLock.lock();
 			this.y = y;
@@ -65,7 +65,7 @@ public class Vector {
 		}
 	}
 
-	public float getZ() {
+	public final float getZ() {
 		try {
 			zLock.lock();
 			return z;
@@ -74,29 +74,13 @@ public class Vector {
 		}
 	}
 
-	public void setZ(float z) {
+	public final void setZ(final float z) {
 		try {
 			zLock.lock();
 			this.z = z;
 		} finally {
 			zLock.unlock();
 		}
-	}
-
-	public Vector add(Vector vector) {
-		float x = getX() + vector.getX();
-		float y = getY() + vector.getY();
-		float z = getZ() + vector.getZ();
-
-		return new Vector(x, y, z);
-	}
-
-	public Vector subtract(Vector vector) {
-		float x = getX() - vector.getX();
-		float y = getY() - vector.getY();
-		float z = getZ() - vector.getZ();
-
-		return new Vector(x, y, z);
 	}
 
 }

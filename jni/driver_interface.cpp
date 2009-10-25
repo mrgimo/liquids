@@ -1,6 +1,13 @@
 #include "driver_interface.h"
 
-FT_HANDLE	DriverInterface::handle = 0;
+unsigned char DriverInterface::SYN_BYTE = 0xaa;
+
+unsigned DriverInterface::TENTH_BIT = 0x00000020;
+unsigned DriverInterface::LAST_BIT = 0x80000000;
+
+int DriverInterface::BLOCK_LENGTH = 12;
+
+FT_HANDLE DriverInterface::handle = 0;
 
 void DriverInterface::init() {
 	DWORD numberOfDevices;
@@ -17,15 +24,29 @@ void DriverInterface::init() {
 		FT_OpenEx(infos[i].SerialNumber, FT_OPEN_BY_SERIAL_NUMBER, &handles[i]);
 		
 		DWORD received;
-		char* data = new char[12];
+		unsigned char* data = new unsigned char[BLOCK_LENGTH];
 
-		FT_Read(handles[i], data, 12, &received);
-		if(data[0] == 0xaa && received == 12) {
+		FT_Read(handles[i], data, BLOCK_LENGTH, &received);
+		if(static_cast<int>(received) == BLOCK_LENGTH && isValid(data)) {
 			handle = handles[i];
+			break;
 		}
 	}
 
 	delete[] infos;
+}
+
+bool DriverInterface::isValid(unsigned char* data) {
+	unsigned char pA = 0;
+	unsigned char pB = 0;
+
+	for(int i = 0; i < BLOCK_LENGTH - 2; i++) {
+		pA += data[i];
+		pB += pA;
+	}
+
+	return data[0] == SYN_BYTE && data[BLOCK_LENGTH - 2] == pA
+			&& data[BLOCK_LENGTH - 1] == pB;
 }
 
 void DriverInterface::remove() {
@@ -33,29 +54,34 @@ void DriverInterface::remove() {
 	delete handle;
 }
 
-int* DriverInterface::readAcceleration() {
+int* DriverInterface::readData() {
 	DWORD received;
-	char* data = new char[12];
+	unsigned char* data = new unsigned char[BLOCK_LENGTH];
 
-	FT_Read(handle, data, 12, &received);
-	if(data[0] == 0xaa && received == 12) {
+	FT_Read(handle, data, BLOCK_LENGTH, &received);
+	if(static_cast<int>(received) != BLOCK_LENGTH || !isValid(data)) {
+		delete[] data;
 		return 0;
 	}
 	
-	int* acceleration = new int[4];
+	int* output = new int[4];
 
-	acceleration[0] = static_cast<int>(data[1]);
-	acceleration[1] = extractValue(data[2], data[3]);
-	acceleration[2] = extractValue(data[4], data[5]);
-	acceleration[3] = extractValue(data[6], data[7]);
+	output[0] = static_cast<int>(data[1]);
 
-	return acceleration;
+	output[1] = extractValue(data[2], data[3]);
+	output[2] = extractValue(data[4], data[5]);
+	output[3] = extractValue(data[6], data[7]);
+
+	delete[] data;
+
+	return output;
 }
 
-int DriverInterface::extractValue(char h, char l) {
-	int value = (static_cast<int>(h) << 8) | static_cast<int>(l);
-	if ((value & 0x00000020) == 0x00000020) {
-		return value & ~0x00000020 | 0x80000000;
+int DriverInterface::extractValue(unsigned char h, unsigned char l) {
+	int value = (static_cast<unsigned>(h) << 8) | static_cast<unsigned>(l);
+
+	if (value & TENTH_BIT) {
+		return (value & ~TENTH_BIT) | LAST_BIT;
 	}
 
 	return value;

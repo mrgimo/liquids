@@ -29,10 +29,10 @@ JNIEXPORT void JNICALL Java_ch_hsr_ifs_liquids_devices_Accelerometer_remove
 
 /*
  * Class:     ch_hsr_ifs_liquids_devices_Accelerometer
- * Method:    readAcceleration
+ * Method:    readData
  * Signature: ()[I
  */
-JNIEXPORT jintArray JNICALL Java_ch_hsr_ifs_liquids_devices_Accelerometer_readAcceleration
+JNIEXPORT jintArray JNICALL Java_ch_hsr_ifs_liquids_devices_Accelerometer_readData
   (JNIEnv *, jclass);
 
 #ifdef __cplusplus

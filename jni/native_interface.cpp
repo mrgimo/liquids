@@ -11,15 +11,21 @@ JNIEXPORT void JNICALL Java_ch_hsr_ifs_liquids_devices_Accelerometer_remove
 	DriverInterface::remove();
 }
 
-JNIEXPORT jintArray JNICALL Java_ch_hsr_ifs_liquids_devices_Accelerometer_readAcceleration
+JNIEXPORT jintArray JNICALL Java_ch_hsr_ifs_liquids_devices_Accelerometer_readData
 		(JNIEnv* env, jclass){
-	int* acceleration = DriverInterface::readAcceleration();
+	jint* data = DriverInterface::readData();
+	if(data == 0) {
+		delete[] data;
+		return NULL;
+	}
 
-	jintArray data;
-	data = env->NewIntArray(12);
+	jintArray output;
+	output = env->NewIntArray(12);
 	
-	env->SetIntArrayRegion(data, 0, 12, (jint *) acceleration);
+	env->SetIntArrayRegion(output, 0, 12, static_cast<jint*>(data));
 
-	return data;
+	delete[] data;
+
+	return output;
 }
 

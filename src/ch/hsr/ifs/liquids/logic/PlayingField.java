@@ -14,92 +14,106 @@ import ch.hsr.ifs.liquids.widgets.Window;
 
 import com.sun.opengl.util.texture.Texture;
 
-public class PlayingField implements Renderable {
+public final class PlayingField implements Renderable {
 
 	public static final Particle ACCESSIBLE = null;
-	public static final Particle INACCESSIBLE = new Particle();
+	public static final Particle INACCESSIBLE = new Particle(null, null, null);
+
+	public final Vector sizeInPixels = new Vector();
+	public final Vector sizeInFields = new Vector();
+
+	private final int gridSize;
+	private final Particle[] bounds;
+
+	private final Vector position = new Vector();
 
 	private Texture texture;
 	private File textureFile;
-
-	private Particle[] bounds;
-
-	private Vector position;
-
-	private final int gridSize;
-
-	public final int widthInPixels;
-	public final int heightInPixels;
-
-	private final int widthInFields;
-	private final int heightInFields;
 
 	public PlayingField(File boundsFile, File textureFile, int gridSize) {
 		this.textureFile = textureFile;
 		this.gridSize = gridSize;
 
-		Vector windowSize = Window.getWindow().getSize();
+		float width = Window.getWindow().getSize().getX();
+		float height = Window.getWindow().getSize().getY();
 
-		int width = (int) windowSize.getX();
-		int height = (int) windowSize.getY();
+		position.setX(width / 2);
+		position.setY(height / 2);
 
-		position = new Vector(width / 2, height / 2);
+		sizeInPixels.setX(width - width % gridSize);
+		sizeInPixels.setY(height - height % gridSize);
 
-		widthInPixels = width - width % gridSize;
-		heightInPixels = height - height % gridSize;
+		sizeInFields.setX(sizeInPixels.getX() / gridSize);
+		sizeInFields.setY(sizeInPixels.getY() / gridSize);
 
-		widthInFields = widthInPixels / gridSize;
-		heightInFields = heightInPixels / gridSize;
-
-		initBounds(boundsFile);
+		bounds = createBounds(boundsFile);
 	}
 
-	private void initBounds(File file) {
-		bounds = new Particle[widthInFields * heightInFields];
+	private Particle[] createBounds(File file) {
+		int widthInFields = (int) sizeInFields.getX();
+		int heightInFields = (int) sizeInFields.getY();
 
+		int widthInPixels = (int) sizeInPixels.getX();
+		int heightInPixels = (int) sizeInPixels.getY();
+
+		Particle[] bounds = new Particle[widthInFields * heightInFields];
 		BitMap bitMap = new BitMap(file, widthInPixels, heightInPixels);
+
 		for (int x = 0; x < bitMap.bits.length; x++) {
 			for (int y = 0; y < bitMap.bits[x].length; y++) {
-				if(bitMap.bits[x][y] == Bit.BLACK) {
-					int index = calcIndex(x, y);
-					bounds[index] = INACCESSIBLE;
+				if (bitMap.bits[x][y] == Bit.BLACK) {
+					Vector position = new Vector(x, y);
+
+					bounds[calcIndex(position)] = INACCESSIBLE;
 				}
 			}
 		}
+
+		return bounds;
 	}
 
-	public final void init() throws IOException {
+	public void init() throws IOException {
 		texture = TextureUtil.loadTexture(textureFile);
 	}
 
-	public void render(GL gl) {
-		texture.bind();
+	public final void render(final GL gl) {
 		gl.glColor4f(1, 1, 1, 1);
-		TextureUtil.renderTexture(position, widthInPixels, heightInPixels, gl);
+
+		texture.bind();
+		TextureUtil.renderTexture(position, sizeInPixels, gl);
 	}
 
-	public final int calcIndex(final float x, final float y) {
-		if (x >= widthInPixels || x <= 0 || y >= widthInPixels || y <= 0)
+	public final int calcIndex(final Vector position) {
+		final float x = position.getX();
+		final float y = position.getY();
+
+		final float width = sizeInPixels.getX();
+		final float height = sizeInPixels.getY();
+
+		if (x >= width || x <= 0 || y >= height || y <= 0)
 			return -1;
 
-		return (int) x / gridSize + (int) y / gridSize * widthInFields;
+		final int xi = (int) x / gridSize;
+		final int yi = (int) y / gridSize * (int) sizeInFields.getX();
+
+		return xi + yi;
 	}
 
-	public final Particle get(int index) {
+	public final Particle get(final int index) {
 		if (isInvalid(index))
 			return INACCESSIBLE;
 
 		return bounds[index];
 	}
 
-	public final void set(Particle particle, int index) {
+	public final void set(final Particle particle, final int index) {
 		if (isInvalid(index))
 			return;
 
 		bounds[index] = particle;
 	}
 
-	private final boolean isInvalid(int index) {
+	private final boolean isInvalid(final int index) {
 		return index < 0 || index >= bounds.length;
 	}
 

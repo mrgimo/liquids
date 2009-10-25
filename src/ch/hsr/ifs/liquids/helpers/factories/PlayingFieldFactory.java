@@ -6,7 +6,7 @@ import java.io.FileFilter;
 import ch.hsr.ifs.liquids.helpers.Config;
 import ch.hsr.ifs.liquids.logic.PlayingField;
 
-public class MapFactory {
+public class PlayingFieldFactory {
 
 	private static final String MAP_DIRECTORY = "data/maps";
 
@@ -16,14 +16,14 @@ public class MapFactory {
 	private static final String BOUNDS_REGEX = "bounds\\..*";
 	private static final String TEXTURE_REGEX = "texture\\..*";
 
-	public static PlayingField createMap(Config config) {
+	public static PlayingField createPlayingField(Config config) {
 		String name = config.map.name;
 		int gridSize = config.map.gridSize;
 
 		File directory = searchMapDirectory(name);
 
 		if (directory == null) {
-			return createDefaultMap(gridSize);
+			return createDefaultPlayingField(gridSize);
 		}
 
 		File bounds = null, texture = null;
@@ -37,7 +37,7 @@ public class MapFactory {
 		}
 
 		if (bounds == null || texture == null) {
-			return createDefaultMap(gridSize);
+			return createDefaultPlayingField(gridSize);
 		}
 
 		return new PlayingField(bounds, texture, gridSize);
@@ -65,7 +65,7 @@ public class MapFactory {
 		return file.getName().matches(TEXTURE_REGEX);
 	}
 
-	private static PlayingField createDefaultMap(int gridSize) {
+	private static PlayingField createDefaultPlayingField(int gridSize) {
 		File bounds = new File(DEFAULT_BOUNDS_PATH);
 		File texture = new File(DEFAULT_TEXTURE_PATH);
 

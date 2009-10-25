@@ -1,6 +1,6 @@
 package ch.hsr.ifs.liquids.util;
 
-public class RandomBoolean {
+public final class RandomBoolean {
 
 	private static final boolean[] RANDOM = new boolean[1024];
 
@@ -12,7 +12,7 @@ public class RandomBoolean {
 		}
 	}
 
-	public static boolean random() {
+	public final static boolean random() {
 		return RANDOM[index = ++index % RANDOM.length];
 	}
 

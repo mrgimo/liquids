@@ -3,7 +3,7 @@ package ch.hsr.ifs.liquids.util;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-public class Color {
+public final class Color {
 
 	private static final int COLOR_VALUES = 255;
 
@@ -36,7 +36,7 @@ public class Color {
 		return color / COLOR_VALUES;
 	}
 
-	public float getR() {
+	public final float getR() {
 		try {
 			rLock.lock();
 			return r;
@@ -45,7 +45,7 @@ public class Color {
 		}
 	}
 
-	public void setR(float r) {
+	public final void setR(final float r) {
 		try {
 			rLock.lock();
 			this.r = r;
@@ -54,7 +54,7 @@ public class Color {
 		}
 	}
 
-	public float getG() {
+	public final float getG() {
 		try {
 			gLock.lock();
 			return g;
@@ -63,8 +63,7 @@ public class Color {
 		}
 	}
 
-	public void setG(float g) {
-
+	public final void setG(final float g) {
 		try {
 			gLock.lock();
 			this.g = g;
@@ -73,7 +72,7 @@ public class Color {
 		}
 	}
 
-	public float getB() {
+	public final float getB() {
 		try {
 			bLock.lock();
 			return b;
@@ -82,7 +81,7 @@ public class Color {
 		}
 	}
 
-	public void setB(float b) {
+	public final void setB(final float b) {
 		try {
 			bLock.lock();
 			this.b = b;
@@ -91,7 +90,7 @@ public class Color {
 		}
 	}
 
-	public float getA() {
+	public final float getA() {
 		try {
 			aLock.lock();
 			return a;
@@ -100,7 +99,7 @@ public class Color {
 		}
 	}
 
-	public void setA(float a) {
+	public final void setA(final float a) {
 		try {
 			aLock.lock();
 			this.a = a;

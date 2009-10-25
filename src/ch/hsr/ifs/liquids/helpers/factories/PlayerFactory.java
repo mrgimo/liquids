@@ -13,8 +13,8 @@ public class PlayerFactory {
 			PlayingField playingField) {
 		Player[] players = new Player[config.players.length];
 
-		float w = playingField.widthInPixels;
-		float h = playingField.heightInPixels;
+		float w = playingField.sizeInPixels.getX();
+		float h = playingField.sizeInPixels.getY();
 
 		float x = w / 2;
 		float y = h / 2;

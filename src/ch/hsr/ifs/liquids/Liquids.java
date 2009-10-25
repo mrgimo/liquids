@@ -1,6 +1,6 @@
 package ch.hsr.ifs.liquids;
 
-import static ch.hsr.ifs.liquids.helpers.factories.MapFactory.createMap;
+import static ch.hsr.ifs.liquids.helpers.factories.PlayingFieldFactory.createPlayingField;
 import static ch.hsr.ifs.liquids.helpers.factories.ParticleFactory.createParticles;
 import static ch.hsr.ifs.liquids.helpers.factories.PlayerFactory.createPlayers;
 
@@ -44,7 +44,7 @@ public class Liquids {
 	}
 
 	private void initLogic(Config config) {
-		PlayingField field = createMap(config);
+		PlayingField field = createPlayingField(config);
 
 		Player[] players = createPlayers(config, field);
 		Particle[] particles = createParticles(config, field, players);

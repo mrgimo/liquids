@@ -16,7 +16,7 @@ public class Renderer implements GLEventListener {
 
 	private static final int COLOR_BITS = 8;
 
-	private Renderable renderable;
+	private final Renderable renderable;
 
 	private GLCanvas canvas;
 	private Animator animator;
@@ -28,7 +28,7 @@ public class Renderer implements GLEventListener {
 		animator = new Animator(canvas);
 
 		canvas.addGLEventListener(this);
-		
+
 		window.add(canvas);
 	}
 
@@ -45,11 +45,11 @@ public class Renderer implements GLEventListener {
 
 		return capabilities;
 	}
-	
+
 	public void start() {
 		animator.start();
 	}
-	
+
 	public void stop() {
 		animator.stop();
 	}
@@ -90,7 +90,7 @@ public class Renderer implements GLEventListener {
 		gl.glOrtho(x, width, y, height, -1, 1);
 	}
 
-	public void display(GLAutoDrawable drawable) {
+	public final void display(final GLAutoDrawable drawable) {
 		GL gl = drawable.getGL();
 
 		gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
@@ -98,8 +98,8 @@ public class Renderer implements GLEventListener {
 		gl.glFlush();
 	}
 
-	public void displayChanged(GLAutoDrawable drawable, boolean modeChanged,
-			boolean deviceChanged) {
+	public final void displayChanged(GLAutoDrawable drawable,
+			boolean modeChanged, boolean deviceChanged) {
 		init(drawable);
 	}
 

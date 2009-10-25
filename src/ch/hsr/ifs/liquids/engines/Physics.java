@@ -6,7 +6,8 @@ public class Physics {
 
 	private static final int MOTION_INTERVAL = 20;
 
-	private Moveable moveable;
+	private final Moveable moveable;
+
 	private Thread motionThread;
 
 	private boolean isRunning = false;

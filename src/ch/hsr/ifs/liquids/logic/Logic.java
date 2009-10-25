@@ -7,15 +7,14 @@ import javax.media.opengl.GL;
 import ch.hsr.ifs.liquids.common.Moveable;
 import ch.hsr.ifs.liquids.common.Renderable;
 
-public class Logic implements Renderable, Moveable {
+public final class Logic implements Renderable, Moveable {
 
-	protected PlayingField field;
+	private final PlayingField field;
 
-	protected Player[] players;
-	protected Particle[] particles;
+	private final Player[] players;
+	private final Particle[] particles;
 
-	protected Score score;
-	protected Winner winner;
+	private final UserInterface gui;
 
 	public Logic(PlayingField field, Player[] players, Particle[] particles) {
 		this.field = field;
@@ -23,45 +22,40 @@ public class Logic implements Renderable, Moveable {
 		this.players = players;
 		this.particles = particles;
 
-		score = new Score(players);
-		winner = new Winner();
+		gui = new UserInterface(players);
 	}
 
 	public void init() throws IOException {
 		field.init();
 
-		Player.loadTexture();
-		Particle.loadTexture();
+		Player.staticInit();
+		Particle.staticInit();
 
-		score.init();
-		winner.init();
+		gui.init();
 	}
 
-	public void render(GL gl) {
+	public final void render(final GL gl) {
 		field.render(gl);
 
-		Particle.getTexture().bind();
-		for (Particle particle : particles) {
+		Particle.texture.bind();
+		for (final Particle particle : particles) {
 			particle.render(gl);
 		}
 
-		score.render(gl);
-
-		Player.getTexture().bind();
-		for (Player player : players) {
+		Player.texture.bind();
+		for (final Player player : players) {
 			player.render(gl);
 
 			if (player.numberOfParticles == particles.length) {
-				winner.setColor(player.color);
-				winner.render(gl);
-
-				Player.getTexture().bind();
+				gui.winner = player;
 			}
 		}
+
+		gui.render(gl);
 	}
 
 	public final void move() {
-		for (Particle particle : particles) {
+		for (final Particle particle : particles) {
 			particle.move();
 		}
 	}

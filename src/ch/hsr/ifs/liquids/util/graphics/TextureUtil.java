@@ -25,13 +25,13 @@ public class TextureUtil {
 		return texture;
 	}
 
-	public static void renderTexture(Vector position, float width,
-			float height, GL gl) {
-		float x = position.getX();
-		float y = position.getY();
+	public final static void renderTexture(final Vector position,
+			final Vector size, final GL gl) {
+		final float x = position.getX();
+		final float y = position.getY();
 
-		float w = width / 2;
-		float h = height / 2;
+		final float w = size.getX() / 2;
+		final float h = size.getY() / 2;
 
 		gl.glBegin(GL.GL_TRIANGLE_STRIP);
 
