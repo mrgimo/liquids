@@ -39,6 +39,8 @@ public class Window {
 
 	private Window() {
 		frame = new JFrame();
+		
+		frame.setCursor(null);
 	}
 
 	public void open() {

@@ -90,7 +90,7 @@ public final class PlayingField implements Renderable {
 		final float width = sizeInPixels.getX();
 		final float height = sizeInPixels.getY();
 
-		if (x >= width || x <= 0 || y >= height || y <= 0)
+		if (x >= width || x < 0 || y >= height || y < 0)
 			return -1;
 
 		final int xi = (int) x / gridSize;

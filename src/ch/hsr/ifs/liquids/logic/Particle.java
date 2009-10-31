@@ -20,6 +20,8 @@ public final class Particle implements Renderable, Moveable {
 
 	private static final String TEXTURE_PATH = "data/textures/particle.png";
 
+	private static final float OPAQUE = 0.5f;
+	
 	private static final int MAX_HEALTH = 500;
 	private static final int MIN_HEALTH = 0;
 
@@ -74,7 +76,7 @@ public final class Particle implements Renderable, Moveable {
 		final float g = player.color.getG();
 		final float b = player.color.getB();
 
-		final float a = health / MAX_HEALTH;
+		final float a = OPAQUE * health / MAX_HEALTH;
 
 		gl.glColor4f(r, g, b, a);
 	}

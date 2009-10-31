@@ -15,7 +15,7 @@ import com.sun.opengl.util.texture.Texture;
 
 public final class UserInterface implements Renderable {
 
-	private static final float OPAQUE = 0.3f;
+	private static final float OPAQUE = 0.5f;
 
 	private static final String SCORE_PATH = "data/textures/score.png";
 	private static final String WINNER_PATH = "data/textures/winner.png";
@@ -48,7 +48,7 @@ public final class UserInterface implements Renderable {
 		float x = windowSize.getX();
 		float y = windowSize.getY();
 
-		scorePosition = new Vector(x * 0.5f, y * 0.1f);
+		scorePosition = new Vector(x * 0.5f, y * 0.05f);
 		scoreSize = new Vector(x * 0.8f, y * 0.01f);
 
 		winnerPosition = new Vector(x * 0.5f, y * 0.5f);
