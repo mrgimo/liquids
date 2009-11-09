@@ -8,34 +8,33 @@ import java.awt.event.MouseEvent;
 import ch.hsr.ifs.liquids.util.Vector;
 import ch.hsr.ifs.liquids.widgets.Window;
 
-public class Mouse extends Device {
+public final class Mouse extends Device {
 
-	private AWTEventListener listener;
+	private final AWTEventListener listener;
 
 	public Mouse(Vector position) {
 		super(position);
 
-		initEventListener();
+		listener = createEventListener();
 	}
 
-	private void initEventListener() {
-		listener = new AWTEventListener() {
+	private AWTEventListener createEventListener() {
+		return new AWTEventListener() {
 
 			@Override
-			public void eventDispatched(AWTEvent event) {
-				MouseEvent mouseEvent = (MouseEvent) event;
-
+			public final void eventDispatched(final AWTEvent event) {
 				switch (event.getID()) {
 				case MouseEvent.MOUSE_MOVED:
 				case MouseEvent.MOUSE_DRAGGED:
-					Window window = Window.getWindow();
-
-					position.setX(mouseEvent.getXOnScreen()
-							- window.getPosition().getX());
-					position.setY(Window.SCREEN_HEIGHT
-							- mouseEvent.getYOnScreen()
-							- window.getPosition().getY());
+					updatePosition((MouseEvent) event);
 				}
+			}
+
+			private void updatePosition(final MouseEvent event) {
+				Vector mousePosition = Window.getWindow().getMousePosition();
+				
+				position.setX(mousePosition.getX());
+				position.setY(mousePosition.getY());
 			}
 		};
 	}

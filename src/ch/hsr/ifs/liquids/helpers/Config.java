@@ -9,6 +9,7 @@ public class Config {
 	public static class Window {
 
 		public boolean fullscreen;
+		public boolean hideCursor;
 
 	}
 

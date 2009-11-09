@@ -1,10 +1,16 @@
 package ch.hsr.ifs.liquids.widgets;
 
+import java.awt.Color;
 import java.awt.Component;
+import java.awt.Cursor;
+import java.awt.Dimension;
 import java.awt.Frame;
+import java.awt.Graphics2D;
 import java.awt.GraphicsDevice;
+import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.event.WindowListener;
+import java.awt.image.BufferedImage;
 
 import javax.swing.JFrame;
 
@@ -24,7 +30,7 @@ public class Window {
 
 	private static Window instance;
 
-	private Frame frame;
+	private final Frame frame;
 
 	private boolean isOpen = false;
 	private boolean isFullscreen = false;
@@ -39,8 +45,6 @@ public class Window {
 
 	private Window() {
 		frame = new JFrame();
-		
-		frame.setCursor(null);
 	}
 
 	public void open() {
@@ -67,7 +71,7 @@ public class Window {
 		frame.setSize((int) size.getX(), (int) size.getY());
 	}
 
-	public void setFullscreen(boolean fullscreen) {		
+	public void setFullscreen(boolean fullscreen) {
 		frame.setAlwaysOnTop(fullscreen);
 		frame.setUndecorated(fullscreen);
 
@@ -77,12 +81,40 @@ public class Window {
 		isFullscreen = fullscreen;
 	}
 
+	public void hideCursor(boolean hide) {
+		frame.setCursor(hide ? createHiddenCursor() : null);
+	}
+
+	private Cursor createHiddenCursor() {
+		Toolkit toolkit = Toolkit.getDefaultToolkit();
+		Dimension size = toolkit.getBestCursorSize(1, 1);
+
+		BufferedImage image = new BufferedImage(size.width, size.height,
+				BufferedImage.TYPE_INT_ARGB);
+
+		Graphics2D graphics = image.createGraphics();
+
+		graphics.setBackground(new Color(0, 0, 0, 0));
+		graphics.clearRect(0, 0, size.width, size.height);
+
+		graphics.dispose();
+
+		return toolkit.createCustomCursor(image, new Point(0, 0),
+				"hiddenCursor");
+	}
+
 	public Vector getPosition() {
 		return new Vector(frame.getX(), frame.getY());
 	}
 
 	public Vector getSize() {
 		return new Vector(frame.getWidth(), frame.getHeight());
+	}
+
+	public Vector getMousePosition() {
+		Point mousePosition = frame.getMousePosition();
+
+		return new Vector(mousePosition.x, frame.getHeight() - mousePosition.y);
 	}
 
 	public boolean isOpen() {

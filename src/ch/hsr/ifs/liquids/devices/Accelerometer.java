@@ -7,7 +7,7 @@ import java.util.Map;
 
 import ch.hsr.ifs.liquids.util.Vector;
 
-public class Accelerometer extends Device {
+public final class Accelerometer extends Device {
 
 	private static final float STEP = 1;
 	private static final float PRECISION = 6;
@@ -35,12 +35,6 @@ public class Accelerometer extends Device {
 		updater = createUpdater();
 	}
 
-	private int id;
-
-	public Accelerometer(Vector position) {
-		super(position);
-	}
-
 	private static Thread createUpdater() {
 		return new Thread() {
 
@@ -57,6 +51,12 @@ public class Accelerometer extends Device {
 				remove();
 			}
 		};
+	}
+
+	private int id;
+
+	public Accelerometer(Vector position) {
+		super(position);
 	}
 
 	private final static void updatePosition() {

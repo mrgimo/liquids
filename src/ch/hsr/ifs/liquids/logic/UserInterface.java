@@ -52,7 +52,7 @@ public final class UserInterface implements Renderable {
 		scoreSize = new Vector(x * 0.8f, y * 0.01f);
 
 		winnerPosition = new Vector(x * 0.5f, y * 0.5f);
-		winnerSize = new Vector(x * 0.25f, y * 0.25f);
+		winnerSize = new Vector(x * 0.5f, y * 0.25f);
 	}
 
 	private void calcNumberOfParticles(Player[] players) {

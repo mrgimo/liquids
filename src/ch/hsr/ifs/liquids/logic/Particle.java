@@ -20,7 +20,7 @@ public final class Particle implements Renderable, Moveable {
 
 	private static final String TEXTURE_PATH = "data/textures/particle.png";
 
-	private static final float OPAQUE = 0.5f;
+	private static final float OPAQUE = 0.75f;
 	
 	private static final int MAX_HEALTH = 500;
 	private static final int MIN_HEALTH = 0;

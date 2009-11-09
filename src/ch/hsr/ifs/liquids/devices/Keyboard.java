@@ -7,57 +7,55 @@ import java.awt.event.KeyEvent;
 
 import ch.hsr.ifs.liquids.util.Vector;
 
-public class Keyboard extends Device {
+public final class Keyboard extends Device {
 
 	private static final int STEP = 3;
 	private static final int MOTION_INTERVAL = 10;
 
-	private AWTEventListener listener;
-	private Thread motionThread;
+	private final AWTEventListener eventListener;
+	private final Thread motionThread;
 
-	private boolean isUpdating = false;
+	private final char[] keys;
 
-	private char[] keys;
 	private boolean[] arePressed = { false, false, false, false };
+	private boolean isUpdating = false;
 
 	public Keyboard(Vector position, char up, char down, char right, char left) {
 		super(position);
 
-		initEventListener();
-		initMotionThread();
+		eventListener = createEventListener();
+		motionThread = createMotionThread();
 
-		initKeys(up, down, right, left);
+		keys = new char[] { up, down, right, left };
 	}
 
-	private void initEventListener() {
-		listener = new AWTEventListener() {
+	private AWTEventListener createEventListener() {
+		return new AWTEventListener() {
 
-			public void eventDispatched(AWTEvent event) {
-				KeyEvent keyEvent = (KeyEvent) event;
-
+			public final void eventDispatched(final AWTEvent event) {
 				switch (event.getID()) {
 				case KeyEvent.KEY_PRESSED:
 				case KeyEvent.KEY_RELEASED:
-					char key = keyEvent.getKeyChar();
-
-					updateKeys(key);
+					updateKeys(((KeyEvent) event).getKeyChar());
 				}
 			}
 
 		};
 	}
 
-	private void updateKeys(char key) {
-		for (int i = 0; i < keys.length; i++) {
-			if (keys[i] == key) {
-				arePressed[i] = !arePressed[i];
-				return;
-			}
-		}
+	private final void updateKeys(final char key) {
+		if (key == keys[0])
+			arePressed[0] = !arePressed[0];
+		else if (key == keys[1])
+			arePressed[1] = !arePressed[1];
+		else if (key == keys[2])
+			arePressed[2] = !arePressed[2];
+		else if (key == keys[3])
+			arePressed[3] = !arePressed[3];
 	}
 
-	private void initMotionThread() {
-		motionThread = new Thread() {
+	private Thread createMotionThread() {
+		return new Thread() {
 
 			@Override
 			public void run() {
@@ -75,39 +73,23 @@ public class Keyboard extends Device {
 		};
 	}
 
-	private void updatePosition() {
-		for (int i = 0; i < keys.length; i++) {
-			if (arePressed[i]) {
-				switch (i) {
-				case 0:
-					position.setY(position.getY() + STEP);
-					break;
-				case 1:
-					position.setY(position.getY() - STEP);
-					break;
-				case 2:
-					position.setX(position.getX() + STEP);
-					break;
-				case 3:
-					position.setX(position.getX() - STEP);
-					break;
-				}
-			}
-		}
-	}
+	private final void updatePosition() {
+		if (arePressed[0])
+			position.setY(position.getY() + STEP);
 
-	private void initKeys(char up, char right, char down, char left) {
-		keys = new char[4];
+		if (arePressed[1])
+			position.setY(position.getY() - STEP);
 
-		keys[0] = up;
-		keys[1] = right;
-		keys[2] = down;
-		keys[3] = left;
+		if (arePressed[2])
+			position.setX(position.getX() + STEP);
+
+		if (arePressed[3])
+			position.setX(position.getX() - STEP);
 	}
 
 	public void plug() {
 		Toolkit toolkit = Toolkit.getDefaultToolkit();
-		toolkit.addAWTEventListener(listener, AWTEvent.KEY_EVENT_MASK);
+		toolkit.addAWTEventListener(eventListener, AWTEvent.KEY_EVENT_MASK);
 
 		isUpdating = true;
 		motionThread.start();
@@ -115,7 +97,7 @@ public class Keyboard extends Device {
 
 	public void unplug() {
 		Toolkit toolkit = Toolkit.getDefaultToolkit();
-		toolkit.removeAWTEventListener(listener);
+		toolkit.removeAWTEventListener(eventListener);
 
 		isUpdating = false;
 	}

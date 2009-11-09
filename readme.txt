@@ -12,12 +12,15 @@ Dateien, um das Spiel auszuführen. (info: http://ant.apache.org/)
 2. Konfiguration
 ----------------
 
-Das config-file (data/liquids.config) ist in yaml und kann beliebig angepasst werden.
+Das config-file (data/liquids.config) ist in yaml geschrieben und kann beliebig angepasst werden.
 (info: http://www.yaml.org/)
 
 "window" enthält die Option "fullscreen", welche den Vollbildmodus aktiviert bzw.
 deaktiviert. Mögliche Werte sind "true" für die Aktivierung und "false" für die
 Deaktivierung. Unter Windows ist der Vollbildmodus eventuell nicht möglich.
+Durch die Option "hideCursor" kann der Mauszeiger versteckt werden. Auch hier sind
+die Werte "true" oder "false" möglich, wodurch die Option aktiviert bzw. deaktiviert
+wird.
 
 "map" enthält Informationen zur Karte. Die Option "name" verweist auf den Namen
 eines Verzeichnisses im Verzeichnis "data/maps". Hier können auch eigene Karten

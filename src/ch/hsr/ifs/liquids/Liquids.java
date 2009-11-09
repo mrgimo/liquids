@@ -21,49 +21,48 @@ public class Liquids {
 
 	private static final String CONFIG_PATH = "data/liquids.config";
 
-	private Window window;
+	private final Window window;
 
-	private Logic logic;
+	private final Logic logic;
 
-	private Physics physics;
-	private Renderer renderer;
+	private final Physics physics;
+	private final Renderer renderer;
 
 	public Liquids() {
 		Config config = Config.load(CONFIG_PATH);
 
-		initWindow(config);
-		initLogic(config);
+		window = createWindow(config);
+		logic = createLogic(config);
 
 		physics = new Physics(logic);
 		renderer = new Renderer(logic, window);
 
+		window.open();
+		
 		physics.start();
 		renderer.start();
-
-		window.open();
 	}
 
-	private void initLogic(Config config) {
+	private Logic createLogic(Config config) {
 		PlayingField field = createPlayingField(config);
 
 		Player[] players = createPlayers(config, field);
 		Particle[] particles = createParticles(config, field, players);
 
-		logic = new Logic(field, players, particles);
+		return new Logic(field, players, particles);
 	}
 
-	private void initWindow(Config config) {
-		window = Window.getWindow();
+	private Window createWindow(Config config) {
+		final Window window = Window.getWindow();
 
-		if (config.window.fullscreen) {
-			window.setFullscreen(true);
-		} else {
-			int x = (int) (Window.SCREEN_WIDTH / 10);
-			int y = (int) (Window.SCREEN_HEIGHT / 10);
+		int x = (int) (Window.SCREEN_WIDTH / 10);
+		int y = (int) (Window.SCREEN_HEIGHT / 10);
 
-			window.setPosition(new Vector(x, y));
-			window.setSize(new Vector(x * 8, y * 8));
-		}
+		window.setPosition(new Vector(x, y));
+		window.setSize(new Vector(x * 8, y * 8));
+
+		window.setFullscreen(config.window.fullscreen);
+		window.hideCursor(config.window.hideCursor);
 
 		window.addWindowListener(new WindowAdapter() {
 
@@ -78,6 +77,8 @@ public class Liquids {
 			}
 
 		});
+		
+		return window;
 	}
 
 	public static void main(String[] args) {

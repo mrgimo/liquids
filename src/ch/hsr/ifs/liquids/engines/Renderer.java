@@ -12,14 +12,14 @@ import ch.hsr.ifs.liquids.widgets.Window;
 
 import com.sun.opengl.util.Animator;
 
-public class Renderer implements GLEventListener {
+public final class Renderer implements GLEventListener {
 
 	private static final int COLOR_BITS = 8;
 
 	private final Renderable renderable;
 
-	private GLCanvas canvas;
-	private Animator animator;
+	private final GLCanvas canvas;
+	private final Animator animator;
 
 	public Renderer(Renderable renderable, Window window) {
 		this.renderable = renderable;
