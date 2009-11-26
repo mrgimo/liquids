@@ -15,7 +15,7 @@ import com.sun.opengl.util.texture.Texture;
 
 public final class UserInterface implements Renderable {
 
-	private static final float OPAQUE = 0.5f;
+	private static final float OPAQUE = 0.75f;
 
 	private static final String SCORE_PATH = "data/textures/score.png";
 	private static final String WINNER_PATH = "data/textures/winner.png";

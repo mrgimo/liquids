@@ -29,19 +29,19 @@ public class ParticleFactory {
 				previousPlayer = player;
 			}
 
-			Vector p = new Vector();
+			float x, y;
 			do {
-				p.setX(player.device.position.getX());
-				p.setY(player.device.position.getY());
+				x = player.device.position.getX();
+				y = player.device.position.getY();
 
-				p.setX((float) (Math.cos(angle) * radius) + p.getX());
-				p.setY((float) (Math.sin(angle) * radius) + p.getY());
+				x = (float) (Math.cos(angle) * radius) + x;
+				y = (float) (Math.sin(angle) * radius) + y;
 
 				radius += 0.01;
 				angle += 1 / radius;
-			} while (!isAccessible(field, p));
+			} while (!isAccessible(field, x, y));
 
-			particles[i] = createParticle(field, player, p);
+			particles[i] = createParticle(field, player, x, y);
 		}
 
 		return particles;
@@ -53,19 +53,22 @@ public class ParticleFactory {
 
 		float size = config.particles.size;
 		Particle.size = new Vector(size, size);
+		
+		float step = config.particles.step;
+		Particle.step = step;
 	}
 
-	private static boolean isAccessible(PlayingField field, Vector position) {
-		int index = field.calcIndex(position);
+	private static boolean isAccessible(PlayingField field, float x, float y) {
+		int index = field.calcIndex(x, y);
 
 		return field.get(index) == PlayingField.ACCESSIBLE;
 	}
 
 	private static Particle createParticle(PlayingField field, Player player,
-			Vector position) {
-		Particle particle = new Particle(field, player, position);
+			float x, float y) {
+		Particle particle = new Particle(field, player, new Vector(x, y));
 
-		int index = field.calcIndex(position);
+		int index = field.calcIndex(x, y);
 		field.set(particle, index);
 
 		return particle;

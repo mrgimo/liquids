@@ -21,22 +21,20 @@ public final class Particle implements Renderable, Moveable {
 	private static final String TEXTURE_PATH = "data/textures/particle.png";
 
 	private static final float OPAQUE = 0.75f;
-	
+
 	private static final int MAX_HEALTH = 500;
 	private static final int MIN_HEALTH = 0;
 
 	protected static Texture texture;
 
-	public static Vector size;
-
 	public static int healing;
 	public static int damage;
 
+	public static float step;
+
+	public static Vector size;
+
 	private final Vector position;
-
-	private final Vector alpha = new Vector();
-	private final Vector move = new Vector();
-
 	private final PlayingField field;
 
 	private Player player;
@@ -54,7 +52,7 @@ public final class Particle implements Renderable, Moveable {
 		if (field == null || player == null || position == null)
 			return;
 
-		index = field.calcIndex(position);
+		index = field.calcIndex(position.getX(), position.getY());
 		health = MAX_HEALTH;
 	}
 
@@ -82,74 +80,38 @@ public final class Particle implements Renderable, Moveable {
 	}
 
 	public final void move() {
-		calcAlpha();
+		final float x = position.getX();
+		final float y = position.getY();
 
-		if (tryToMoveForward())
+		final float x_d = player.device.position.getX() - x;
+		final float y_d = player.device.position.getY() - y;
+
+		final float d = (float) Math.sqrt(x_d * x_d + y_d * y_d);
+		if (d == 0)
+			return;
+
+		final float a = step / d;
+
+		final float x_a = x_d * a;
+		final float y_a = y_d * a;
+
+		if (tryToMove(x + x_a, y + y_a))
 			return;
 
 		interact();
 
-		if (RandomBoolean.random()) {
-			if (tryToMoveRight() || tryToMoveLeft())
-				return;
-		} else {
-			if (tryToMoveLeft() || tryToMoveRight())
-				return;
-		}
+		float swap = RandomBoolean.random() ? -1 : 1;
+		if (tryToMove(x + swap * y_a, y - swap * x_a))
+			return;
 
-		tryToMoveBackwards();
+		if (tryToMove(x - swap * y_a, y + swap * x_a))
+			return;
+
+		tryToMove(x - x_a, y - y_a);
 	}
 
-	private final void calcAlpha() {
-		alpha.setX(player.device.position.getX() - position.getX());
-		alpha.setY(player.device.position.getY() - position.getY());
-
-		float x = alpha.getX() * alpha.getX();
-		float y = alpha.getY() * alpha.getY();
-
-		final float distance = (float) Math.sqrt(x + y);
-		if (distance == 0) {
-			x = 0;
-			y = 0;
-		} else {
-			x = alpha.getX() * size.getX() / distance;
-			y = alpha.getY() * size.getY() / distance;
-		}
-
-		alpha.setX(x);
-		alpha.setY(y);
-	}
-
-	private final boolean tryToMoveForward() {
-		move.setX(position.getX() + alpha.getX());
-		move.setY(position.getY() + alpha.getY());
-
-		return tryToMove();
-	}
-
-	private final boolean tryToMoveRight() {
-		move.setX(position.getX() + alpha.getY());
-		move.setY(position.getY() - alpha.getX());
-
-		return tryToMove();
-	}
-
-	private final boolean tryToMoveLeft() {
-		move.setX(position.getX() - alpha.getY());
-		move.setY(position.getY() + alpha.getX());
-
-		return tryToMove();
-	}
-
-	private final boolean tryToMoveBackwards() {
-		move.setX(position.getX() - alpha.getX());
-		move.setY(position.getY() - alpha.getY());
-
-		return tryToMove();
-	}
-
-	private final boolean tryToMove() {
-		final int index = field.calcIndex(move);
+	private final boolean tryToMove(final float x, final float y) {
+		final int index = field.calcIndex(x, y);
 
 		target = field.get(index);
 		if (target != ACCESSIBLE && target != this)
@@ -158,8 +120,8 @@ public final class Particle implements Renderable, Moveable {
 		field.set(ACCESSIBLE, this.index);
 		field.set(this, index);
 
-		position.setX(move.getX());
-		position.setY(move.getY());
+		position.setX(x);
+		position.setY(y);
 
 		this.index = index;
 
@@ -167,7 +129,7 @@ public final class Particle implements Renderable, Moveable {
 	}
 
 	private final void interact() {
-		if (target == INACCESSIBLE)
+		if (target == INACCESSIBLE || target == ACCESSIBLE)
 			return;
 
 		if (target.player != player)

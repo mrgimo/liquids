@@ -26,6 +26,8 @@ public class Config {
 		public int healing;
 		public int damage;
 		public int size;
+		
+		public float step;
 
 	}
 

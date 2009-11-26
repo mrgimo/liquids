@@ -4,7 +4,7 @@ import ch.hsr.ifs.liquids.common.Moveable;
 
 public final class Physics {
 
-	private static final int MOTION_INTERVAL = 15;
+	private static final int MOTION_INTERVAL = 25;
 
 	private final Moveable moveable;
 

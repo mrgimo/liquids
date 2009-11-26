@@ -61,11 +61,8 @@ public final class PlayingField implements Renderable {
 
 		for (int x = 0; x < bitMap.bits.length; x++) {
 			for (int y = 0; y < bitMap.bits[x].length; y++) {
-				if (bitMap.bits[x][y] == Bit.BLACK) {
-					Vector position = new Vector(x, y);
-
-					bounds[calcIndex(position)] = INACCESSIBLE;
-				}
+				if (bitMap.bits[x][y] == Bit.BLACK)
+					bounds[calcIndex(x, y)] = INACCESSIBLE;
 			}
 		}
 
@@ -83,10 +80,7 @@ public final class PlayingField implements Renderable {
 		TextureUtil.renderTexture(position, sizeInPixels, gl);
 	}
 
-	public final int calcIndex(final Vector position) {
-		final float x = position.getX();
-		final float y = position.getY();
-
+	public final int calcIndex(final float x, final float y) {
 		final float width = sizeInPixels.getX();
 		final float height = sizeInPixels.getY();
 
