@@ -21,7 +21,6 @@ public final class Mouse extends Device {
 	private AWTEventListener createEventListener() {
 		return new AWTEventListener() {
 
-			@Override
 			public final void eventDispatched(final AWTEvent event) {
 				switch (event.getID()) {
 				case MouseEvent.MOUSE_MOVED:
@@ -33,8 +32,8 @@ public final class Mouse extends Device {
 			private void updatePosition(final MouseEvent event) {
 				Vector mousePosition = Window.getWindow().getMousePosition();
 				
-				position.setX(mousePosition.getX());
-				position.setY(mousePosition.getY());
+				setX(mousePosition.getX());
+				setY(mousePosition.getY());
 			}
 		};
 	}

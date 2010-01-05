@@ -1,140 +1,169 @@
 package ch.hsr.ifs.liquids.devices;
 
-import java.util.ArrayList;
+import gnu.io.CommPort;
+import gnu.io.CommPortIdentifier;
+import gnu.io.SerialPort;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.List;
+import java.util.LinkedList;
 import java.util.Map;
+import java.util.Queue;
 
 import ch.hsr.ifs.liquids.util.Vector;
 
-public final class Accelerometer extends Device {
+public class Accelerometer extends Device {
 
-	private static final float STEP = 1;
+	private static final float STEP = 20;
 	private static final float PRECISION = 6;
 
-	private static final Map<Integer, Accelerometer> plugged;
-	private static final List<Accelerometer> unplugged;
+	private static final int BLOCK_LENGTH = 12;
 
-	private static final Thread updater;
+	private static final int TENTH_BIT = 0x00000200;
+	private static final int INVERSION_MASK = 0xfffffc00;
 
-	private static boolean isUpdating = false;
-	private static boolean isLoaded;
+	private static final byte SYN_BYTE = (byte) 0xaa;
+
+	private static Map<Byte, Accelerometer> devices = new HashMap<Byte, Accelerometer>();
+	private static Queue<Accelerometer> queue = new LinkedList<Accelerometer>();
 
 	static {
-		try {
-			System.loadLibrary("accelerometer");
-			isLoaded = true;
-		} catch (UnsatisfiedLinkError e) {
-			System.err.println(e.getMessage());
-			isLoaded = false;
+		@SuppressWarnings("unchecked")
+		Enumeration<CommPortIdentifier> identifiers = CommPortIdentifier
+				.getPortIdentifiers();
+
+		while (identifiers.hasMoreElements()) {
+			CommPortIdentifier identifier = identifiers.nextElement();
+			if (identifier.isCurrentlyOwned())
+				continue;
+
+			try {
+				CommPort port = identifier.open("Accelerometer", 300);
+				if (!(port instanceof SerialPort))
+					continue;
+
+				((SerialPort) port).setSerialPortParams(115200,
+						SerialPort.DATABITS_8, SerialPort.STOPBITS_1,
+						SerialPort.PARITY_NONE);
+
+				new Thread(updater(port.getInputStream())).start();
+			} catch (Exception e) {
+				continue;
+			}
 		}
-
-		plugged = new HashMap<Integer, Accelerometer>();
-		unplugged = new ArrayList<Accelerometer>();
-
-		updater = createUpdater();
 	}
 
-	private static Thread createUpdater() {
-		return new Thread() {
+	private static Runnable updater(final InputStream input) {
+		return new Runnable() {
 
-			@Override
 			public void run() {
-				if (!isLoaded)
+				byte[] data = new byte[BLOCK_LENGTH];
+				try {
+					int read, off = 0;
+					while ((read = input.read(data, off, BLOCK_LENGTH - off)) != -1) {
+						off += read;
+
+						if (off == BLOCK_LENGTH) {
+							process(data);
+
+							off = 0;
+						}
+					}
+				} catch (IOException e) {
 					return;
-
-				init();
-
-				while (isUpdating)
-					updatePosition();
-
-				remove();
+				} finally {
+					try {
+						input.close();
+					} catch (IOException e) {
+					}
+				}
 			}
+
 		};
 	}
 
-	private int id;
+	private static void process(byte[] data) {
+		if (!isValid(data))
+			return;
+
+		Accelerometer accelerometer;
+		if ((accelerometer = fetch(data[1])) != null)
+			accelerometer.updatePosition(data);
+	}
+
+	private static boolean isValid(byte[] data) {
+		if (data[0] != SYN_BYTE)
+			return false;
+
+		byte pA = 0;
+		byte pB = 0;
+
+		for (int i = 0; i < BLOCK_LENGTH - 2; ++i) {
+			pA += data[i];
+			pB += pA;
+		}
+
+		return (data[BLOCK_LENGTH - 2] == pA && data[BLOCK_LENGTH - 1] == pB) || true; //TODO: fix it!
+	}
+
+	private static int toInt(byte b) {
+		return b & 0xff;
+	}
+
+	private static Accelerometer fetch(byte id) {
+		Accelerometer accelerometer;
+		if ((accelerometer = devices.get(id)) != null)
+			return accelerometer;
+
+		if ((accelerometer = queue.poll()) == null)
+			return null;
+
+		accelerometer.id = id;
+		devices.put(id, accelerometer);
+
+		return accelerometer;
+	}
+
+	private byte id;
 
 	public Accelerometer(Vector position) {
 		super(position);
 	}
 
-	private final static void updatePosition() {
-		final int[] data = readData();
+	private void updatePosition(byte[] data) {
+		int x = compose(data[2], data[3]);
+		int y = compose(data[4], data[5]);
+		int z = compose(data[6], data[7]);
 
-		if (data == null)
-			return;
-
-		final Accelerometer accelerometer = getAccelerometer(data);
-		if (accelerometer == null)
-			return;
-
-		final float x = calcX(data);
-		final float y = calcY(data);
-
-		final Vector position = accelerometer.position;
-
-		position.setX(position.getX() + x);
-		position.setY(position.getY() + y);
+		setX(getX() + calcX(x, z));
+		setY(getY() + calcY(y, z));
 	}
 
-	private final static Accelerometer getAccelerometer(final int[] data) {
-		final int id = data[0];
-
-		Accelerometer accelerometer = plugged.get(id);
-		if (accelerometer != null || unplugged.size() <= 0)
-			return accelerometer;
-
-		final int index = unplugged.size() - 1;
-
-		accelerometer = unplugged.get(index);
-		accelerometer.id = id;
-
-		unplugged.remove(index);
-		plugged.put(id, accelerometer);
-
-		return accelerometer;
+	private int compose(byte l, byte h) {
+		int value = (toInt(h) << 8) | toInt(l);
+		return (value & TENTH_BIT) == 0 ? value : value | INVERSION_MASK;
 	}
 
-	private final static float calcX(final int[] data) {
-		final int x = data[1];
-		final int z = data[3];
-
-		final float alpha = Math.round(PRECISION * Math.atan2(x, z));
-
-		return STEP * alpha;
+	private float calcX(int x, int z) {
+		//return STEP * Math.round(PRECISION * Math.atan2(x, z));
+		return (float) Math.atan2(x, z) * STEP;
 	}
 
-	private final static float calcY(final int[] data) {
-		final int y = data[2];
-		final int z = data[3];
-
-		final float beta = Math.round(PRECISION * Math.atan2(y, z));
-
-		return STEP * beta;
+	private float calcY(int y, int z) {
+		//return STEP * Math.round(PRECISION * Math.atan2(y, z));
+		return (float) Math.atan2(y, z) * STEP;
 	}
 
 	@Override
 	public void plug() {
-		unplugged.add(this);
-
-		if (!isUpdating) {
-			isUpdating = true;
-			updater.start();
-		}
+		queue.offer(this);
 	}
 
 	@Override
 	public void unplug() {
-		plugged.remove(id);
-
-		isUpdating = plugged.isEmpty();
+		devices.remove(id);
 	}
-
-	private static native void init();
-
-	private static native void remove();
-
-	private static native int[] readData();
 
 }

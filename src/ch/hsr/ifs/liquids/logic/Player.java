@@ -45,7 +45,7 @@ public final class Player implements Renderable {
 
 	public final void render(final GL gl) {
 		gl.glColor4f(color.getR(), color.getG(), color.getB(), OPAQUE);
-		TextureUtil.renderTexture(device.position, SIZE, gl);
+		TextureUtil.renderTexture(device.getX(), device.getY(), SIZE, gl);
 	}
 
 }

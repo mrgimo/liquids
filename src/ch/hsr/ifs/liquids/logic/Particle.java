@@ -83,8 +83,8 @@ public final class Particle implements Renderable, Moveable {
 		final float x = position.getX();
 		final float y = position.getY();
 
-		final float x_d = player.device.position.getX() - x;
-		final float y_d = player.device.position.getY() - y;
+		final float x_d = player.device.getX() - x;
+		final float y_d = player.device.getY() - y;
 
 		final float d = (float) Math.sqrt(x_d * x_d + y_d * y_d);
 		if (d == 0)

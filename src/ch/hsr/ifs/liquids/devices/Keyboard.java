@@ -33,25 +33,30 @@ public final class Keyboard extends Device {
 		return new AWTEventListener() {
 
 			public final void eventDispatched(final AWTEvent event) {
-				switch (event.getID()) {
-				case KeyEvent.KEY_PRESSED:
-				case KeyEvent.KEY_RELEASED:
-					updateKeys(((KeyEvent) event).getKeyChar());
-				}
+				char key = ((KeyEvent) event).getKeyChar();
+				if(event.getID() == KeyEvent.KEY_RELEASED)
+					update(key, false);
+				else
+					update(key, true);
 			}
 
 		};
 	}
 
-	private final void updateKeys(final char key) {
+	private final void update(final char key, final boolean isPressed) {
 		if (key == keys[0])
-			arePressed[0] = !arePressed[0];
+			arePressed[0] = isPressed;
 		else if (key == keys[1])
-			arePressed[1] = !arePressed[1];
+			arePressed[1] = isPressed;
 		else if (key == keys[2])
-			arePressed[2] = !arePressed[2];
+			arePressed[2] = isPressed;
 		else if (key == keys[3])
-			arePressed[3] = !arePressed[3];
+			arePressed[3] = isPressed;
+
+		for (boolean b : arePressed)
+			System.out.println(b);
+
+		System.out.println();
 	}
 
 	private Thread createMotionThread() {
@@ -75,16 +80,16 @@ public final class Keyboard extends Device {
 
 	private final void updatePosition() {
 		if (arePressed[0])
-			position.setY(position.getY() + STEP);
+			setY(getY() + STEP);
 
 		if (arePressed[1])
-			position.setY(position.getY() - STEP);
+			setY(getY() - STEP);
 
 		if (arePressed[2])
-			position.setX(position.getX() + STEP);
+			setX(getX() + STEP);
 
 		if (arePressed[3])
-			position.setX(position.getX() - STEP);
+			setX(getX() - STEP);
 	}
 
 	public void plug() {

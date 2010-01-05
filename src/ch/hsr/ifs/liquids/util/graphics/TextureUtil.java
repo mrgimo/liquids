@@ -30,6 +30,10 @@ public class TextureUtil {
 		final float x = position.getX();
 		final float y = position.getY();
 
+		renderTexture(x, y, size, gl);
+	}
+
+	public static void renderTexture(float x, float y, Vector size, GL gl) {
 		final float w = size.getX() / 2;
 		final float h = size.getY() / 2;
 

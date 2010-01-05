@@ -61,6 +61,7 @@
 			<zipfileset includes="**/*.class" src="${lib.dir}/gluegen-rt.jar" />
 			<zipfileset includes="**/*.class" src="${lib.dir}/jogl.jar" />
 			<zipfileset includes="**/*.class" src="${lib.dir}/jyaml-1.3.jar" />
+			<zipfileset includes="**/*.class" src="${lib.dir}/RXTXcomm.jar" />
 
 			<manifest>
 				<attribute name="Built-By" value="${user.name}" />

@@ -22,11 +22,8 @@ public class Liquids {
 	private static final String CONFIG_PATH = "data/liquids.config";
 
 	private final Window window;
-
 	private final Logic logic;
-
 	private final Physics physics;
-	private final Renderer renderer;
 
 	public Liquids() {
 		Config config = Config.load(CONFIG_PATH);
@@ -34,13 +31,11 @@ public class Liquids {
 		window = createWindow(config);
 		logic = createLogic(config);
 
-		physics = new Physics(logic);
-		renderer = new Renderer(logic, window);
-
+		window.addGLEventListener(new Renderer(logic));
 		window.open();
-		
+
+		physics = new Physics(logic);
 		physics.start();
-		renderer.start();
 	}
 
 	private Logic createLogic(Config config) {
@@ -53,31 +48,31 @@ public class Liquids {
 	}
 
 	private Window createWindow(Config config) {
-		final Window window = Window.getWindow();
+		Window window = Window.getWindow();
 
-		int x = (int) (Window.SCREEN_WIDTH / 10);
-		int y = (int) (Window.SCREEN_HEIGHT / 10);
+		if (config.window.fullscreen) {
+			window.setFullscreen(config.window.fullscreen);
+		} else {
+			int x = (int) (Window.SCREEN_WIDTH / 10);
+			int y = (int) (Window.SCREEN_HEIGHT / 10);
 
-		window.setPosition(new Vector(x, y));
-		window.setSize(new Vector(x * 8, y * 8));
-
-		window.setFullscreen(config.window.fullscreen);
+			window.setPosition(new Vector(x, y));
+			window.setSize(new Vector(x * 8, y * 8));
+		}
+		
 		window.hideCursor(config.window.hideCursor);
 
 		window.addWindowListener(new WindowAdapter() {
 
 			@Override
 			public void windowClosing(WindowEvent e) {
-				window.close();
-
-				renderer.stop();
 				physics.stop();
-
+				Liquids.this.window.close();
 				System.exit(0);
 			}
 
 		});
-		
+
 		return window;
 	}
 

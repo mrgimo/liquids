@@ -2,56 +2,18 @@ package ch.hsr.ifs.liquids.engines;
 
 import javax.media.opengl.GL;
 import javax.media.opengl.GLAutoDrawable;
-import javax.media.opengl.GLCanvas;
-import javax.media.opengl.GLCapabilities;
 import javax.media.opengl.GLEventListener;
 
 import ch.hsr.ifs.liquids.common.Renderable;
 import ch.hsr.ifs.liquids.util.Vector;
 import ch.hsr.ifs.liquids.widgets.Window;
 
-import com.sun.opengl.util.Animator;
-
 public final class Renderer implements GLEventListener {
-
-	private static final int COLOR_BITS = 8;
 
 	private final Renderable renderable;
 
-	private final GLCanvas canvas;
-	private final Animator animator;
-
-	public Renderer(Renderable renderable, Window window) {
+	public Renderer(Renderable renderable) {
 		this.renderable = renderable;
-
-		canvas = new GLCanvas(createCapabilities());
-		animator = new Animator(canvas);
-
-		canvas.addGLEventListener(this);
-
-		window.add(canvas);
-	}
-
-	private GLCapabilities createCapabilities() {
-		GLCapabilities capabilities = new GLCapabilities();
-
-		capabilities.setDoubleBuffered(true);
-		capabilities.setHardwareAccelerated(true);
-
-		capabilities.setRedBits(COLOR_BITS);
-		capabilities.setGreenBits(COLOR_BITS);
-		capabilities.setBlueBits(COLOR_BITS);
-		capabilities.setAlphaBits(COLOR_BITS);
-
-		return capabilities;
-	}
-
-	public void start() {
-		animator.start();
-	}
-
-	public void stop() {
-		animator.stop();
 	}
 
 	public void init(GLAutoDrawable drawable) {

@@ -31,8 +31,8 @@ public class ParticleFactory {
 
 			float x, y;
 			do {
-				x = player.device.position.getX();
-				y = player.device.position.getY();
+				x = player.device.getX();
+				y = player.device.getY();
 
 				x = (float) (Math.cos(angle) * radius) + x;
 				y = (float) (Math.sin(angle) * radius) + y;
