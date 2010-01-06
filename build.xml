@@ -1,32 +1,55 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<project name="Liquids" default="release" basedir=".">
+<project name="Liquids" default="distribute" basedir=".">
 
 	<property name="name" value="liquids" />
-	<property name="version" value="0.9.0" />
+	<property name="version" value="0.9.5" />
 	<property name="release" value="${name}-${version}" />
 
 	<property name="src.dir" location="src" />
 	<property name="bin.dir" location="bin" />
 	<property name="lib.dir" location="lib" />
-	<property name="test.dir" location="test" />
-	<property name="data.dir" location="data" />
-	<property name="dist.dir" location="release" />
-	<property name="native.dir" location="native" />
-	<property name="scripts.dir" location="scripts" />
 
-	<property name="bin.prod.dir" location="${bin.dir}/prod" />
-	<property name="bin.test.dir" location="${bin.dir}/test" />
-	<property name="bin.report.dir" location="${bin.dir}/report" />
-
-	<property name="dist.native.dir" location="${dist.dir}/native" />
-	<property name="dist.data.dir" location="${dist.dir}/data" />
+	<property name="classes.dir" value="${bin.dir}/classes" />
 
 	<property name="jar.name" value="${name}.jar" />
-	<property name="jar.path" location="${dist.dir}/${jar.name}" />
+	<property name="jar.path" location="${bin.dir}/${jar.name}" />
+
+	<property name="linux" value="linux" />
+	<property name="macosx" value="macosx" />
+	<property name="windows" value="windows" />
+
+	<property name="data" value="data" />
+	<property name="data.dir" location="${data}" />
+
+	<property name="native" value="native" />
+	<property name="native.dir" location="${native}" />
+
+	<property name="native.linux.dir" location="${native.dir}/${linux}" />
+	<property name="native.macosx.dir" location="${native.dir}/${macosx}" />
+	<property name="native.windows.dir" location="${native.dir}/${windows}" />
+
+	<property name="scripts.dir" location="scripts" />
+
+	<property name="script.linux.dir" location="${scripts.dir}/${linux}" />
+	<property name="script.macosx.dir" location="${scripts.dir}/${macosx}" />
+	<property name="script.windows.dir" location="${scripts.dir}/${windows}" />
+
+	<property name="dist.dir" location="dist" />
+
+	<property name="dist.linux.dir" location="${dist.dir}/${linux}" />
+	<property name="dist.macosx.dir" location="${dist.dir}/${macosx}" />
+	<property name="dist.windows.dir" location="${dist.dir}/${windows}" />
+
+	<property name="dist.linux.native.dir" location="${dist.linux.dir}/${native}" />
+	<property name="dist.macosx.native.dir" location="${dist.macosx.dir}/${native}" />
+	<property name="dist.windows.native.dir" location="${dist.windows.dir}/${native}" />
+
+	<property name="dist.linux.data.dir" location="${dist.linux.dir}/${data}" />
+	<property name="dist.macosx.data.dir" location="${dist.macosx.dir}/${data}" />
+	<property name="dist.windows.data.dir" location="${dist.windows.dir}/${data}" />
 
 	<path id="project.classpath">
-		<pathelement location="${bin.prod.dir}" />
-		<pathelement location="${bin.test.dir}" />
+		<pathelement location="${classes.dir}" />
 
 		<fileset dir="${lib.dir}">
 			<include name="*.jar" />
@@ -42,22 +65,25 @@
 	</target>
 
 	<target name="prepare" depends="clobber">
-		<mkdir dir="${bin.prod.dir}" />
-		<mkdir dir="${bin.test.dir}" />
-		<mkdir dir="${bin.report.dir}" />
+		<mkdir dir="${classes.dir}" />
 
-		<mkdir dir="${dist.data.dir}" />
-		<mkdir dir="${dist.native.dir}" />
+		<mkdir dir="${dist.linux.native.dir}" />
+		<mkdir dir="${dist.macosx.native.dir}" />
+		<mkdir dir="${dist.windows.native.dir}" />
+
+		<mkdir dir="${dist.linux.data.dir}" />
+		<mkdir dir="${dist.macosx.data.dir}" />
+		<mkdir dir="${dist.windows.data.dir}" />
 	</target>
 
 	<target name="compile" depends="prepare">
-		<javac srcdir="${src.dir}" destdir="${bin.prod.dir}">
+		<javac srcdir="${src.dir}" destdir="${classes.dir}">
 			<classpath refid="project.classpath" />
 		</javac>
 	</target>
 
 	<target name="jar" depends="compile">
-		<jar destfile="${jar.path}" basedir="${bin.prod.dir}">
+		<jar destfile="${jar.path}" basedir="${classes.dir}">
 			<zipfileset includes="**/*.class" src="${lib.dir}/gluegen-rt.jar" />
 			<zipfileset includes="**/*.class" src="${lib.dir}/jogl.jar" />
 			<zipfileset includes="**/*.class" src="${lib.dir}/jyaml-1.3.jar" />
@@ -70,17 +96,63 @@
 		</jar>
 	</target>
 
-	<target name="release" depends="jar">
-		<copy todir="${dist.data.dir}">
+	<target name="distribute" depends="jar">
+		<antcall target="distribute.linux" />
+		<antcall target="distribute.macosx" />
+		<antcall target="distribute.windows" />
+	</target>
+
+	<target name="distribute.linux">
+		<copy todir="${dist.linux.dir}">
+			<fileset file="${jar.path}" />
+		</copy>
+
+		<copy todir="${dist.linux.native.dir}">
+			<fileset dir="${native.linux.dir}" />
+		</copy>
+
+		<copy todir="${dist.linux.data.dir}">
 			<fileset dir="${data.dir}" />
 		</copy>
 
-		<copy todir="${dist.native.dir}">
-			<fileset dir="${native.dir}" />
+		<copy todir="${dist.linux.dir}">
+			<fileset dir="${script.linux.dir}" />
+		</copy>
+	</target>
+
+	<target name="distribute.macosx">
+		<copy todir="${dist.macosx.dir}">
+			<fileset file="${jar.path}" />
 		</copy>
 
-		<copy todir="${dist.dir}">
-			<fileset dir="${scripts.dir}" />
+		<copy todir="${dist.macosx.native.dir}">
+			<fileset dir="${native.macosx.dir}" />
+		</copy>
+
+		<copy todir="${dist.macosx.data.dir}">
+			<fileset dir="${data.dir}" />
+		</copy>
+
+		<copy todir="${dist.macosx.dir}">
+			<fileset dir="${script.macosx.dir}" />
+		</copy>
+	</target>
+
+	<target name="distribute.windows">
+		<copy todir="${dist.windows.dir}">
+			<fileset file="${jar.path}" />
+		</copy>
+
+		<copy todir="${dist.windows.native.dir}">
+			<fileset dir="${native.windows.dir}" />
+		</copy>
+
+		<copy todir="${dist.windows.data.dir}">
+			<fileset dir="${data.dir}" />
+		</copy>
+
+		<copy todir="${dist.windows.dir}">
+			<fileset dir="${script.windows.dir}" />
 		</copy>
 	</target>
 

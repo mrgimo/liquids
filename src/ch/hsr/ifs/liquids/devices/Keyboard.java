@@ -52,11 +52,6 @@ public final class Keyboard extends Device {
 			arePressed[2] = isPressed;
 		else if (key == keys[3])
 			arePressed[3] = isPressed;
-
-		for (boolean b : arePressed)
-			System.out.println(b);
-
-		System.out.println();
 	}
 
 	private Thread createMotionThread() {

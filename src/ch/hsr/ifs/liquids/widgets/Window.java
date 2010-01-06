@@ -5,7 +5,6 @@ import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.Graphics2D;
-import java.awt.GraphicsDevice;
 import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.event.WindowListener;
@@ -37,11 +36,9 @@ public class Window {
 	private final static Window instance = new Window();
 
 	private final Frame frame;
+
 	private final GLCanvas canvas;
 	private final Animator animator;
-
-	private boolean isOpen = false;
-	private boolean isFullscreen = false;
 
 	public static Window getWindow() {
 		return instance;
@@ -49,10 +46,30 @@ public class Window {
 
 	private Window() {
 		frame = new JFrame();
+
 		canvas = new GLCanvas(createCapabilities());
 		animator = new Animator(canvas);
-		
+
 		frame.add(canvas);
+		frame.setCursor(createHiddenCursor());
+	}
+
+	private Cursor createHiddenCursor() {
+		Toolkit toolkit = Toolkit.getDefaultToolkit();
+		Dimension size = toolkit.getBestCursorSize(1, 1);
+
+		BufferedImage image = new BufferedImage(size.width, size.height,
+				BufferedImage.TYPE_INT_ARGB);
+
+		Graphics2D graphics = image.createGraphics();
+
+		graphics.setBackground(new Color(0, 0, 0, 0));
+		graphics.clearRect(0, 0, size.width, size.height);
+
+		graphics.dispose();
+
+		return toolkit.createCustomCursor(image, new Point(0, 0),
+				"hiddenCursor");
 	}
 
 	private GLCapabilities createCapabilities() {
@@ -96,38 +113,6 @@ public class Window {
 		frame.pack();
 	}
 
-	public void setFullscreen(boolean fullscreen) {
-		frame.setAlwaysOnTop(fullscreen);
-		frame.setUndecorated(fullscreen);
-
-		GraphicsDevice device = frame.getGraphicsConfiguration().getDevice();
-		device.setFullScreenWindow(fullscreen ? frame : null);
-
-		isFullscreen = fullscreen;
-	}
-
-	public void hideCursor(boolean hide) {
-		frame.setCursor(hide ? createHiddenCursor() : null);
-	}
-
-	private Cursor createHiddenCursor() {
-		Toolkit toolkit = Toolkit.getDefaultToolkit();
-		Dimension size = toolkit.getBestCursorSize(1, 1);
-
-		BufferedImage image = new BufferedImage(size.width, size.height,
-				BufferedImage.TYPE_INT_ARGB);
-
-		Graphics2D graphics = image.createGraphics();
-
-		graphics.setBackground(new Color(0, 0, 0, 0));
-		graphics.clearRect(0, 0, size.width, size.height);
-
-		graphics.dispose();
-
-		return toolkit.createCustomCursor(image, new Point(0, 0),
-				"hiddenCursor");
-	}
-
 	public Vector getPosition() {
 		return new Vector(frame.getX(), frame.getY());
 	}
@@ -142,14 +127,6 @@ public class Window {
 			return new Vector();
 
 		return new Vector(mousePosition.x, frame.getHeight() - mousePosition.y);
-	}
-
-	public boolean isOpen() {
-		return isOpen;
-	}
-
-	public boolean isFullscreen() {
-		return isFullscreen;
 	}
 
 }

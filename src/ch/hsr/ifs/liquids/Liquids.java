@@ -50,17 +50,11 @@ public class Liquids {
 	private Window createWindow(Config config) {
 		Window window = Window.getWindow();
 
-		if (config.window.fullscreen) {
-			window.setFullscreen(config.window.fullscreen);
-		} else {
-			int x = (int) (Window.SCREEN_WIDTH / 10);
-			int y = (int) (Window.SCREEN_HEIGHT / 10);
+		int x = (int) (Window.SCREEN_WIDTH / 10);
+		int y = (int) (Window.SCREEN_HEIGHT / 10);
 
-			window.setPosition(new Vector(x, y));
-			window.setSize(new Vector(x * 8, y * 8));
-		}
-		
-		window.hideCursor(config.window.hideCursor);
+		window.setPosition(new Vector(x, y));
+		window.setSize(new Vector(x * 8, y * 8));
 
 		window.addWindowListener(new WindowAdapter() {
 

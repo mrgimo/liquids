@@ -1,1 +1,0 @@
-java -Djava.library.path=native/windows-i586 -jar liquids.jar

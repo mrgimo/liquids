@@ -5,7 +5,7 @@ Liquids
 --------
 
 Das Projekt verfügt über ein ant-script (build.xml), nach dessen Ausführung
-ein neuer Ordner "realease" erstellt wird. Darin befinden sich alle nötigen
+ein neuer Ordner "dist" erstellt wird. Darin befinden sich alle nötigen
 Dateien, um das Spiel auszuführen. (info: http://ant.apache.org/)
 
 
@@ -14,13 +14,6 @@ Dateien, um das Spiel auszuführen. (info: http://ant.apache.org/)
 
 Das config-file (data/liquids.config) ist in yaml geschrieben und kann beliebig angepasst werden.
 (info: http://www.yaml.org/)
-
-"window" enthält die Option "fullscreen", welche den Vollbildmodus aktiviert bzw.
-deaktiviert. Mögliche Werte sind "true" für die Aktivierung und "false" für die
-Deaktivierung. Unter Windows ist der Vollbildmodus eventuell nicht möglich.
-Durch die Option "hideCursor" kann der Mauszeiger versteckt werden. Auch hier sind
-die Werte "true" oder "false" möglich, wodurch die Option aktiviert bzw. deaktiviert
-wird.
 
 "map" enthält Informationen zur Karte. Die Option "name" verweist auf den Namen
 eines Verzeichnisses im Verzeichnis "data/maps". Hier können auch eigene Karten
@@ -31,7 +24,8 @@ und regelt somit, wann eine Kollision entsteht.
 
 "particles" gruppiert Optionen, welche die Partikel betreffen. So kann mit "quantity"
 die Anzahl (pro Spieler), mit "healing" die Heilungskraft, mit "damage"
-der Schaden und mit "size" die Darstellungsgrösse der Partikel beeinflusst werden.
+der Schaden, mit "size" die Darstellungsgrösse und mit "step" die Grösse der Schritte
+der Partikel beeinflusst werden.
 
 "players" enthält eine Liste der Spieleroptionen. Spieler können beliebig zur Liste
 hinzugefügt oder entfernt werden. Pro Spieler müssen zwei Optionen angegeben werden.
@@ -42,7 +36,7 @@ sind Maus, Beschleunigungsmesser und Tastatur. Die dazugehörenden Werte sind "m
 für Maus, "accelerometer" für Beschleunigungsmesser und vier Zeichen für die Tastatur.
 Die vier Zeichen, welche für die Nutzung der Tastatur angegeben werden müssen, bestimmen
 welche Tasten verwendet werden sollen. Die Zeichen werden in der Reihenfolge vor, zurück,
-links, rechts angegeben.
+rechts, links angegeben.
 
 
 3. Start

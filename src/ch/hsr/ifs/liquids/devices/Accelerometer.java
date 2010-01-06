@@ -14,10 +14,12 @@ import java.util.Queue;
 
 import ch.hsr.ifs.liquids.util.Vector;
 
+import static gnu.io.CommPortIdentifier.*;
+
 public class Accelerometer extends Device {
 
-	private static final float STEP = 20;
-	private static final float PRECISION = 6;
+	private static final float STEP = 2;
+	private static final float PRECISION = 10;
 
 	private static final int BLOCK_LENGTH = 12;
 
@@ -30,9 +32,16 @@ public class Accelerometer extends Device {
 	private static Queue<Accelerometer> queue = new LinkedList<Accelerometer>();
 
 	static {
+		try {
+			open();
+		} catch (UnsatisfiedLinkError e) {
+			System.err.println(e.getMessage());
+		}
+	}
+
+	private static void open() {
 		@SuppressWarnings("unchecked")
-		Enumeration<CommPortIdentifier> identifiers = CommPortIdentifier
-				.getPortIdentifiers();
+		Enumeration<CommPortIdentifier> identifiers = getPortIdentifiers();
 
 		while (identifiers.hasMoreElements()) {
 			CommPortIdentifier identifier = identifiers.nextElement();
@@ -59,38 +68,35 @@ public class Accelerometer extends Device {
 		return new Runnable() {
 
 			public void run() {
-				byte[] data = new byte[BLOCK_LENGTH];
 				try {
-					int read, off = 0;
-					while ((read = input.read(data, off, BLOCK_LENGTH - off)) != -1) {
-						off += read;
-
-						if (off == BLOCK_LENGTH) {
-							process(data);
-
-							off = 0;
-						}
-					}
+					update();
 				} catch (IOException e) {
 					return;
 				} finally {
 					try {
 						input.close();
-					} catch (IOException e) {
-					}
+					} catch (IOException e) { }
+				}
+			}
+
+			private void update() throws IOException {
+				byte[] data = new byte[BLOCK_LENGTH];
+
+				int read, off = 0;
+				while ((read = input.read(data, off, BLOCK_LENGTH - off)) != -1) {
+					if ((off += read) != BLOCK_LENGTH)
+						continue;
+
+					if (isValid(data))
+						process(data);
+					else
+						input.skip(1);
+
+					off = 0;
 				}
 			}
 
 		};
-	}
-
-	private static void process(byte[] data) {
-		if (!isValid(data))
-			return;
-
-		Accelerometer accelerometer;
-		if ((accelerometer = fetch(data[1])) != null)
-			accelerometer.updatePosition(data);
 	}
 
 	private static boolean isValid(byte[] data) {
@@ -105,7 +111,13 @@ public class Accelerometer extends Device {
 			pB += pA;
 		}
 
-		return (data[BLOCK_LENGTH - 2] == pA && data[BLOCK_LENGTH - 1] == pB) || true; //TODO: fix it!
+		return (data[BLOCK_LENGTH - 2] == pA && data[BLOCK_LENGTH - 1] == pB) || true; // TODO: fix it!
+	}
+
+	private static void process(byte[] data) {
+		Accelerometer accelerometer;
+		if ((accelerometer = fetch(data[1])) != null)
+			accelerometer.updatePosition(data);
 	}
 
 	private static int toInt(byte b) {
@@ -147,13 +159,11 @@ public class Accelerometer extends Device {
 	}
 
 	private float calcX(int x, int z) {
-		//return STEP * Math.round(PRECISION * Math.atan2(x, z));
-		return (float) Math.atan2(x, z) * STEP;
+		return STEP * Math.round(PRECISION * Math.atan2(x, z));
 	}
 
 	private float calcY(int y, int z) {
-		//return STEP * Math.round(PRECISION * Math.atan2(y, z));
-		return (float) Math.atan2(y, z) * STEP;
+		return STEP * Math.round(PRECISION * Math.atan2(y, z));
 	}
 
 	@Override

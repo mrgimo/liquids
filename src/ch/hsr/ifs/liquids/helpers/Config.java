@@ -6,13 +6,6 @@ import org.ho.yaml.Yaml;
 
 public class Config {
 
-	public static class Window {
-
-		public boolean fullscreen;
-		public boolean hideCursor;
-
-	}
-
 	public static class Map {
 
 		public String name;
@@ -38,7 +31,6 @@ public class Config {
 
 	}
 
-	public Window window;
 	public Map map;
 	public Particles particles;
 	public Player[] players;
