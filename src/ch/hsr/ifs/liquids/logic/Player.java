@@ -3,7 +3,7 @@ package ch.hsr.ifs.liquids.logic;
 import java.io.File;
 import java.io.IOException;
 
-import javax.media.opengl.GL;
+import javax.media.opengl.GL2;
 
 import ch.hsr.ifs.liquids.common.Renderable;
 import ch.hsr.ifs.liquids.devices.Device;
@@ -11,7 +11,7 @@ import ch.hsr.ifs.liquids.util.Color;
 import ch.hsr.ifs.liquids.util.Vector;
 import ch.hsr.ifs.liquids.util.graphics.TextureUtil;
 
-import com.sun.opengl.util.texture.Texture;
+import com.jogamp.opengl.util.texture.Texture;
 
 public final class Player implements Renderable {
 
@@ -35,15 +35,15 @@ public final class Player implements Renderable {
 		this.numberOfParticles = numberOfParticles;
 	}
 
-	public static void staticInit() throws IOException {
-		texture = TextureUtil.loadTexture(new File(TEXTURE_PATH));
+	public static void staticInit(GL2 gl) throws IOException {
+		texture = TextureUtil.initTexture(gl, new File(TEXTURE_PATH));
 	}
 
-	public void init() throws IOException {
-		staticInit();
+	public void init(GL2 gl) throws IOException {
+		staticInit(gl);
 	}
 
-	public final void render(final GL gl) {
+	public final void render(final GL2 gl) {
 		gl.glColor4f(color.getR(), color.getG(), color.getB(), OPAQUE);
 		TextureUtil.renderTexture(device.getX(), device.getY(), SIZE, gl);
 	}

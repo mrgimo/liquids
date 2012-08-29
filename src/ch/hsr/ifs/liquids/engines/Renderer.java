@@ -1,8 +1,12 @@
 package ch.hsr.ifs.liquids.engines;
 
 import javax.media.opengl.GL;
+import javax.media.opengl.GL2;
+import javax.media.opengl.GL2ES1;
 import javax.media.opengl.GLAutoDrawable;
 import javax.media.opengl.GLEventListener;
+import javax.media.opengl.fixedfunc.GLLightingFunc;
+import javax.media.opengl.fixedfunc.GLMatrixFunc;
 
 import ch.hsr.ifs.liquids.common.Renderable;
 import ch.hsr.ifs.liquids.util.Vector;
@@ -18,7 +22,7 @@ public final class Renderer implements GLEventListener {
 
 	public void init(GLAutoDrawable drawable) {
 		try {
-			renderable.init();
+			renderable.init(drawable.getGL().getGL2());
 		} catch (Exception e) {
 			System.err.println(e.getMessage());
 		}
@@ -29,10 +33,10 @@ public final class Renderer implements GLEventListener {
 
 	public void reshape(GLAutoDrawable drawable, int x, int y, int width,
 			int height) {
-		GL gl = drawable.getGL();
+		GL2 gl = drawable.getGL().getGL2();
 
-		gl.glMatrixMode(GL.GL_PROJECTION);
-		gl.glShadeModel(GL.GL_SMOOTH);
+		gl.glMatrixMode(GLMatrixFunc.GL_PROJECTION);
+		gl.glShadeModel(GLLightingFunc.GL_SMOOTH);
 
 		gl.glDisable(GL.GL_DEPTH_TEST);
 
@@ -41,8 +45,8 @@ public final class Renderer implements GLEventListener {
 
 		gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
 
-		gl.glHint(GL.GL_PERSPECTIVE_CORRECTION_HINT, GL.GL_NICEST);
-		gl.glHint(GL.GL_POINT_SMOOTH_HINT, GL.GL_NICEST);
+		gl.glHint(GL2ES1.GL_PERSPECTIVE_CORRECTION_HINT, GL.GL_NICEST);
+		gl.glHint(GL2ES1.GL_POINT_SMOOTH_HINT, GL.GL_NICEST);
 
 		gl.glClearColor(0, 0, 0, 0);
 		gl.glClearDepth(1.0);
@@ -53,7 +57,7 @@ public final class Renderer implements GLEventListener {
 	}
 
 	public final void display(final GLAutoDrawable drawable) {
-		GL gl = drawable.getGL();
+		GL2 gl = drawable.getGL().getGL2();
 
 		gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
 		renderable.render(gl);
@@ -63,6 +67,10 @@ public final class Renderer implements GLEventListener {
 	public final void displayChanged(GLAutoDrawable drawable,
 			boolean modeChanged, boolean deviceChanged) {
 		init(drawable);
+	}
+
+	public void dispose(GLAutoDrawable drawable) {
+
 	}
 
 }

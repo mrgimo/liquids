@@ -2,7 +2,7 @@ package ch.hsr.ifs.liquids.logic;
 
 import java.io.IOException;
 
-import javax.media.opengl.GL;
+import javax.media.opengl.GL2;
 
 import ch.hsr.ifs.liquids.common.Moveable;
 import ch.hsr.ifs.liquids.common.Renderable;
@@ -25,24 +25,24 @@ public final class Logic implements Renderable, Moveable {
 		gui = new UserInterface(players);
 	}
 
-	public void init() throws IOException {
-		field.init();
+	public void init(GL2 gl) throws IOException {
+		field.init(gl);
 
-		Player.staticInit();
-		Particle.staticInit();
+		Player.staticInit(gl);
+		Particle.staticInit(gl);
 
-		gui.init();
+		gui.init(gl);
 	}
 
-	public final void render(final GL gl) {
+	public final void render(final GL2 gl) {
 		field.render(gl);
 
-		Particle.texture.bind();
+		Particle.texture.bind(gl);
 		for (final Particle particle : particles) {
 			particle.render(gl);
 		}
 
-		Player.texture.bind();
+		Player.texture.bind(gl);
 		for (final Player player : players) {
 			player.render(gl);
 

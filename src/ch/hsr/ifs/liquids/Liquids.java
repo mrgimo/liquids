@@ -1,8 +1,8 @@
 package ch.hsr.ifs.liquids;
 
-import static ch.hsr.ifs.liquids.helpers.factories.PlayingFieldFactory.createPlayingField;
 import static ch.hsr.ifs.liquids.helpers.factories.ParticleFactory.createParticles;
 import static ch.hsr.ifs.liquids.helpers.factories.PlayerFactory.createPlayers;
+import static ch.hsr.ifs.liquids.helpers.factories.PlayingFieldFactory.createPlayingField;
 
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;

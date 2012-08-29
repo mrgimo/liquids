@@ -6,34 +6,36 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 import javax.media.opengl.GL;
+import javax.media.opengl.GL2;
+import javax.media.opengl.GLProfile;
 
 import ch.hsr.ifs.liquids.util.Vector;
 
-import com.sun.opengl.util.ImageUtil;
-import com.sun.opengl.util.texture.Texture;
-import com.sun.opengl.util.texture.TextureIO;
+import com.jogamp.opengl.util.awt.ImageUtil;
+import com.jogamp.opengl.util.texture.Texture;
+import com.jogamp.opengl.util.texture.awt.AWTTextureIO;
 
 public class TextureUtil {
 
-	public static Texture loadTexture(File file) throws IOException {
+	public static Texture initTexture(GL2 gl, File file) throws IOException {
 		BufferedImage image = ImageIO.read(file);
 		ImageUtil.flipImageVertically(image);
 
-		Texture texture = TextureIO.newTexture(image, true);
-		texture.enable();
+		Texture texture = AWTTextureIO.newTexture(GLProfile.getDefault(), image, false);
+		texture.enable(gl);
 
 		return texture;
 	}
 
 	public final static void renderTexture(final Vector position,
-			final Vector size, final GL gl) {
+			final Vector size, final GL2 gl) {
 		final float x = position.getX();
 		final float y = position.getY();
 
 		renderTexture(x, y, size, gl);
 	}
 
-	public static void renderTexture(float x, float y, Vector size, GL gl) {
+	public static void renderTexture(float x, float y, Vector size, GL2 gl) {
 		final float w = size.getX() / 2;
 		final float h = size.getY() / 2;
 

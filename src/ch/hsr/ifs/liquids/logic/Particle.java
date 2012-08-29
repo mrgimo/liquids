@@ -6,7 +6,7 @@ import static ch.hsr.ifs.liquids.logic.PlayingField.INACCESSIBLE;
 import java.io.File;
 import java.io.IOException;
 
-import javax.media.opengl.GL;
+import javax.media.opengl.GL2;
 
 import ch.hsr.ifs.liquids.common.Moveable;
 import ch.hsr.ifs.liquids.common.Renderable;
@@ -14,7 +14,7 @@ import ch.hsr.ifs.liquids.util.RandomBoolean;
 import ch.hsr.ifs.liquids.util.Vector;
 import ch.hsr.ifs.liquids.util.graphics.TextureUtil;
 
-import com.sun.opengl.util.texture.Texture;
+import com.jogamp.opengl.util.texture.Texture;
 
 public final class Particle implements Renderable, Moveable {
 
@@ -56,20 +56,20 @@ public final class Particle implements Renderable, Moveable {
 		health = MAX_HEALTH;
 	}
 
-	public static void staticInit() throws IOException {
-		texture = TextureUtil.loadTexture(new File(TEXTURE_PATH));
+	public static void staticInit(GL2 gl) throws IOException {
+		texture = TextureUtil.initTexture(gl, new File(TEXTURE_PATH));
 	}
 
-	public void init() throws IOException {
-		staticInit();
+	public void init(GL2 gl) throws IOException {
+		staticInit(gl);
 	}
 
-	public final void render(final GL gl) {
+	public final void render(final GL2 gl) {
 		setColor(gl);
 		TextureUtil.renderTexture(position, size, gl);
 	}
 
-	private final void setColor(final GL gl) {
+	private final void setColor(final GL2 gl) {
 		final float r = player.color.getR();
 		final float g = player.color.getG();
 		final float b = player.color.getB();

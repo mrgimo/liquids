@@ -3,16 +3,16 @@ package ch.hsr.ifs.liquids.logic;
 import java.io.File;
 import java.io.IOException;
 
-import javax.media.opengl.GL;
+import javax.media.opengl.GL2;
 
 import ch.hsr.ifs.liquids.common.Renderable;
 import ch.hsr.ifs.liquids.util.Vector;
 import ch.hsr.ifs.liquids.util.graphics.BitMap;
-import ch.hsr.ifs.liquids.util.graphics.TextureUtil;
 import ch.hsr.ifs.liquids.util.graphics.BitMap.Bit;
+import ch.hsr.ifs.liquids.util.graphics.TextureUtil;
 import ch.hsr.ifs.liquids.widgets.Window;
 
-import com.sun.opengl.util.texture.Texture;
+import com.jogamp.opengl.util.texture.Texture;
 
 public final class PlayingField implements Renderable {
 
@@ -69,14 +69,14 @@ public final class PlayingField implements Renderable {
 		return bounds;
 	}
 
-	public void init() throws IOException {
-		texture = TextureUtil.loadTexture(textureFile);
+	public void init(GL2 gl) throws IOException {
+		texture = TextureUtil.initTexture(gl, textureFile);
 	}
 
-	public final void render(final GL gl) {
+	public final void render(final GL2 gl) {
 		gl.glColor4f(1, 1, 1, 1);
 
-		texture.bind();
+		texture.bind(gl);
 		TextureUtil.renderTexture(position, sizeInPixels, gl);
 	}
 

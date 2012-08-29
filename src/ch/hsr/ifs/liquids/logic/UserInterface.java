@@ -3,7 +3,7 @@ package ch.hsr.ifs.liquids.logic;
 import java.io.File;
 import java.io.IOException;
 
-import javax.media.opengl.GL;
+import javax.media.opengl.GL2;
 
 import ch.hsr.ifs.liquids.common.Renderable;
 import ch.hsr.ifs.liquids.util.Color;
@@ -11,7 +11,7 @@ import ch.hsr.ifs.liquids.util.Vector;
 import ch.hsr.ifs.liquids.util.graphics.TextureUtil;
 import ch.hsr.ifs.liquids.widgets.Window;
 
-import com.sun.opengl.util.texture.Texture;
+import com.jogamp.opengl.util.texture.Texture;
 
 public final class UserInterface implements Renderable {
 
@@ -61,13 +61,13 @@ public final class UserInterface implements Renderable {
 		}
 	}
 
-	public void init() throws IOException {
-		scoreTexture = TextureUtil.loadTexture(new File(SCORE_PATH));
-		winnerTexture = TextureUtil.loadTexture(new File(WINNER_PATH));
+	public void init(GL2 gl) throws IOException {
+		scoreTexture = TextureUtil.initTexture(gl, new File(SCORE_PATH));
+		winnerTexture = TextureUtil.initTexture(gl, new File(WINNER_PATH));
 	}
 
-	public final void render(final GL gl) {
-		scoreTexture.bind();
+	public final void render(final GL2 gl) {
+		scoreTexture.bind(gl);
 
 		float xAlpha = scorePosition.getX() - scoreSize.getX() / 2;
 		for (final Player player : players) {
@@ -79,12 +79,13 @@ public final class UserInterface implements Renderable {
 		if (winner != null) {
 			setColor(gl, winner.color);
 
-			winnerTexture.bind();
+			winnerTexture.bind(gl);
 			TextureUtil.renderTexture(winnerPosition, winnerSize, gl);
 		}
 	}
 
-	private final void renderScore(final GL gl, float xAlpha, final Player player) {
+	private final void renderScore(final GL2 gl, float xAlpha,
+			final Player player) {
 		size.setX(calcWidth(player));
 		size.setY(scoreSize.getY());
 
@@ -100,7 +101,7 @@ public final class UserInterface implements Renderable {
 				/ numberOfParticles;
 	}
 
-	private final void setColor(final GL gl, final Color color) {
+	private final void setColor(final GL2 gl, final Color color) {
 		final float r = color.getR();
 		final float g = color.getG();
 		final float b = color.getB();

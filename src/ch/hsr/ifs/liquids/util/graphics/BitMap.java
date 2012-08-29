@@ -9,7 +9,7 @@ import java.io.File;
 
 import javax.imageio.ImageIO;
 
-import com.sun.opengl.util.ImageUtil;
+import com.jogamp.opengl.util.awt.ImageUtil;
 
 public class BitMap {
 
